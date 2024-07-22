@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, UploadedFile, UseInterceptors, UsePipes, ValidationPipe, Param } from '@nestjs/common';
+import { Body, Controller, Patch, Post, UploadedFile, UseInterceptors, UsePipes, ValidationPipe, Param, ParseIntPipe } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { CreateUserDto } from '../dtos/create-user.dto'; 
 import { LoginUserDto } from '../dtos/login-user.dto'; 
@@ -29,7 +29,7 @@ export class AuthController {
 
   @Patch('logout/:userId')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async logout(@Param('userId') userId: number): Promise<void> {
+  async logout(@Param('userId', ParseIntPipe) userId: number): Promise<void> {
     return this.authService.logout(userId);
   }
 }
