@@ -10,6 +10,8 @@ import { AccessToken } from './modules/auth/models/access-token.model';
 import { RefreshToken } from './modules/auth/models/refresh-token.model';
 import { Event } from './modules/event/models/event.model';
 import { EventModule } from './modules/event/event.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { Ticket } from './modules/ticket/models/ticket.model';
 
 @Module({
   imports: [
@@ -27,13 +29,14 @@ import { EventModule } from './modules/event/event.module';
         database: configService.get<string>('DB_NAME'),
         autoLoadModels: true,
         synchronize: true,
-        models: [User, AccessToken, RefreshToken, Event],
+        models: [User, AccessToken, RefreshToken, Event, Ticket],
       }),
       inject: [ConfigService],
     }),
     UserModule,
     AuthModule,
     EventModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
