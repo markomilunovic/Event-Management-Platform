@@ -12,6 +12,8 @@ import { Event } from './modules/event/models/event.model';
 import { EventModule } from './modules/event/event.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { Ticket } from './modules/ticket/models/ticket.model';
+import { NotificationModule } from './modules/notification/notification.module';
+import { Notification } from './modules/notification/models/notification.model';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { Ticket } from './modules/ticket/models/ticket.model';
         database: configService.get<string>('DB_NAME'),
         autoLoadModels: true,
         synchronize: true,
-        models: [User, AccessToken, RefreshToken, Event, Ticket],
+        models: [User, AccessToken, RefreshToken, Event, Ticket, Notification],
       }),
       inject: [ConfigService],
     }),
@@ -37,6 +39,7 @@ import { Ticket } from './modules/ticket/models/ticket.model';
     AuthModule,
     EventModule,
     TicketModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
