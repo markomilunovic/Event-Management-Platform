@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { User } from './modules/user/models/user.model';
 import { AccessToken } from './modules/auth/models/access-token.model';
 import { RefreshToken } from './modules/auth/models/refresh-token.model';
+import { Event } from './modules/event/models/event.model';
+import { EventModule } from './modules/event/event.module';
 
 @Module({
   imports: [
@@ -25,12 +27,13 @@ import { RefreshToken } from './modules/auth/models/refresh-token.model';
         database: configService.get<string>('DB_NAME'),
         autoLoadModels: true,
         synchronize: true,
-        models: [User, AccessToken, RefreshToken],
+        models: [User, AccessToken, RefreshToken, Event],
       }),
       inject: [ConfigService],
     }),
     UserModule,
     AuthModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
