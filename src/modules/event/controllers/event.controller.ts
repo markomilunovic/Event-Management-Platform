@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
@@ -12,6 +12,7 @@ export class EventController {
 
   @UseGuards(JwtUserGuard)
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createEvent(@Body() createEventDto: CreateEventDto, @Req() req: AuthRequest): Promise<EventResponseDto> {
     const userId = req.user?.id;
     if (!userId) {
@@ -23,6 +24,7 @@ export class EventController {
 
   @UseGuards(JwtUserGuard)
   @Get()
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async getUserEvents(@Req() req: AuthRequest): Promise<EventResponseDto[]> {
     const userId = req.user?.id;
     if (!userId) {
@@ -33,6 +35,7 @@ export class EventController {
   }
 
   @Get('search')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async searchEvents(@Query() searchEventsDto: SearchEventsDto): Promise<EventResponseDto[]> {
     const events = await this.eventService.searchEvents(searchEventsDto);
     return events.map(event => new EventResponseDto(event));

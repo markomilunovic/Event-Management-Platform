@@ -28,7 +28,6 @@ export class AuthController {
   }
 
   @Patch('logout/:userId')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async logout(@Param('userId', ParseIntPipe) userId: number): Promise<void> {
     return this.authService.logout(userId);
   }
