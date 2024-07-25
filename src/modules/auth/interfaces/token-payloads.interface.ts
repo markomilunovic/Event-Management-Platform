@@ -9,6 +9,8 @@ export interface RefreshTokenPayload {
 }
 
 export interface JwtPayloadType {
-    userId: number;
+    accessTokenPayload: AccessTokenPayload;
+    iat: number;
+    exp: number;
   }
   
