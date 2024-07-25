@@ -2,14 +2,14 @@ import { Injectable, BadRequestException, NotFoundException, UnauthorizedExcepti
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from '../repositories/auth.repository';
-import { CreateUserDto } from '../dtos/create-user.dto'; 
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { LoginUserDto } from '../dtos/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UserResponseDto } from '../dtos/user-response.dto';
 import { AccessTokenPayload, RefreshTokenPayload } from '../interfaces/token-payloads.interface';
-import { AccessToken } from '../models/access-token.model'; 
-import { RefreshToken } from '../models/refresh-token.model'; 
+import { AccessToken } from '../models/access-token.model';
+import { RefreshToken } from '../models/refresh-token.model';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   generateAccessToken(payload: AccessTokenPayload): string {
-    const expiresIn = `${this.configService.get('ACCESS_TOKEN_EXPIRATION_DAYS')}d`;
+    const expiresIn = `${this.configService.get('ACCESS_TOKEN_EXP_TIME_IN_DAYS')}d`;
     return this.jwtService.sign(payload, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
       expiresIn,
@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   generateRefreshToken(payload: RefreshTokenPayload): string {
-    const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXPIRATION_DAYS')}d`;
+    const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXP_TIME_IN_DAYS')}d`;
     return this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn,
@@ -70,10 +70,10 @@ export class AuthService {
     }
 
     const accessTokenExpiresAt = new Date();
-    accessTokenExpiresAt.setDate(accessTokenExpiresAt.getDate() + this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_DAYS'));
+    accessTokenExpiresAt.setDate(accessTokenExpiresAt.getDate() + this.configService.get<number>('ACCESS_TOKEN_EXP_TIME_IN_DAYS'));
 
     const refreshTokenExpiresAt = new Date();
-    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_DAYS'));
+    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + this.configService.get<number>('REFRESH_TOKEN_EXP_TIME_IN_DAYS'));
 
     const accessToken = await this.saveAccessToken(user.id, accessTokenExpiresAt);
     const refreshToken = await this.saveRefreshToken(accessToken.id, refreshTokenExpiresAt);
@@ -100,7 +100,7 @@ export class AuthService {
     if (!accessToken) {
       throw new NotFoundException('Access token not found for user');
     }
-    
+
     await this.authRepository.revokeAccessToken(accessToken.id);
     await this.authRepository.revokeRefreshTokenByAccessTokenId(accessToken.id);
   }
