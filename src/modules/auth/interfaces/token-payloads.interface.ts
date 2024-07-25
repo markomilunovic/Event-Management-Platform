@@ -9,7 +9,8 @@ export interface RefreshTokenPayload {
 }
 
 export interface JwtPayloadType {
-    accessTokenPayload: AccessTokenPayload;
+    jti: string;
+    sub: number;
     iat: number;
     exp: number;
   }
