@@ -2,11 +2,14 @@ import { Injectable, BadRequestException, NotFoundException, UnauthorizedExcepti
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from '../repositories/auth.repository';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto'; 
 import { LoginUserDto } from '../dtos/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UserResponseDto } from '../dtos/user-response.dto';
+import { AccessTokenPayload, RefreshTokenPayload } from '../interfaces/token-payloads.interface';
+import { AccessToken } from '../models/access-token.model'; 
+import { RefreshToken } from '../models/refresh-token.model'; 
 
 @Injectable()
 export class AuthService {
@@ -19,8 +22,8 @@ export class AuthService {
   async register(createUserDto: CreateUserDto, profilePicture?: string): Promise<UserResponseDto> {
     const { email, password } = createUserDto;
 
-    const user = await this.authRepository.findUserByEmail(email);
-    if (user) {
+    const existingUser = await this.authRepository.findUserByEmail(email);
+    if (existingUser) {
       throw new BadRequestException('User already exists');
     }
 
@@ -29,30 +32,28 @@ export class AuthService {
     return new UserResponseDto(newUser);
   }
 
-  createAccessToken(accessTokenEncode: any): string {
-    const expiresIn = `${this.configService.get('ACCESS_TOKEN_EXP_TIME_IN_DAYS')}d`;
-    return this.jwtService.sign({ accessTokenEncode }, {
+  generateAccessToken(payload: AccessTokenPayload): string {
+    const expiresIn = `${this.configService.get('ACCESS_TOKEN_EXPIRATION_DAYS')}d`;
+    return this.jwtService.sign(payload, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
       expiresIn,
     });
   }
 
-  createRefreshToken(refreshTokenEncode: any): string {
-    const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXP_TIME_IN_DAYS')}d`;
-    return this.jwtService.sign({ refreshTokenEncode }, {
+  generateRefreshToken(payload: RefreshTokenPayload): string {
+    const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXPIRATION_DAYS')}d`;
+    return this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn,
     });
   }
 
-  async createAccessTokenInDb(userId: number, expiresAt: Date): Promise<any> {
-    const token = await this.authRepository.createAccessToken(userId, expiresAt);
-    return token;
+  async saveAccessToken(userId: number, expiresAt: Date): Promise<AccessToken> {
+    return await this.authRepository.createAccessToken(userId, expiresAt);
   }
 
-  async createRefreshTokenInDb(accessTokenId: string, expiresAt: Date): Promise<any> {
-    const token = await this.authRepository.createRefreshToken(accessTokenId, expiresAt);
-    return token;
+  async saveRefreshToken(accessTokenId: string, expiresAt: Date): Promise<RefreshToken> {
+    return await this.authRepository.createRefreshToken(accessTokenId, expiresAt);
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginResponseDto> {
@@ -63,35 +64,35 @@ export class AuthService {
       throw new NotFoundException('User does not exist');
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       throw new UnauthorizedException('Wrong password');
     }
 
     const accessTokenExpiresAt = new Date();
-    accessTokenExpiresAt.setDate(accessTokenExpiresAt.getDate() + this.configService.get<number>('ACCESS_TOKEN_EXP_TIME_IN_DAYS'));
+    accessTokenExpiresAt.setDate(accessTokenExpiresAt.getDate() + this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_DAYS'));
 
     const refreshTokenExpiresAt = new Date();
-    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + this.configService.get<number>('REFRESH_TOKEN_EXP_TIME_IN_DAYS'));
+    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_DAYS'));
 
-    const accessToken = await this.createAccessTokenInDb(user.id, accessTokenExpiresAt);
-    const refreshToken = await this.createRefreshTokenInDb(accessToken.id, refreshTokenExpiresAt);
+    const accessToken = await this.saveAccessToken(user.id, accessTokenExpiresAt);
+    const refreshToken = await this.saveRefreshToken(accessToken.id, refreshTokenExpiresAt);
 
-    const accessTokenEncode = {
+    const accessTokenPayload: AccessTokenPayload = {
       jti: accessToken.id,
       sub: user.id,
     };
 
-    const refreshTokenEncode = {
+    const refreshTokenPayload: RefreshTokenPayload = {
       jti: refreshToken.id,
       sub: accessToken.id,
     };
 
-    const accessTokenToken = this.createAccessToken(accessTokenEncode);
-    const refreshTokenToken = this.createRefreshToken(refreshTokenEncode);
+    const accessTokenString = this.generateAccessToken(accessTokenPayload);
+    const refreshTokenString = this.generateRefreshToken(refreshTokenPayload);
 
     const userResponseDto = new UserResponseDto(user);
-    return new LoginResponseDto(accessTokenToken, refreshTokenToken, userResponseDto);
+    return new LoginResponseDto(accessTokenString, refreshTokenString, userResponseDto);
   }
 
   async logout(userId: number): Promise<void> {
@@ -101,7 +102,6 @@ export class AuthService {
     }
     
     await this.authRepository.revokeAccessToken(accessToken.id);
-
     await this.authRepository.revokeRefreshTokenByAccessTokenId(accessToken.id);
   }
 }
