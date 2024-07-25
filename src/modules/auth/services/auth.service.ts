@@ -39,14 +39,14 @@ export class AuthService {
       expiresIn,
     });
   }
-
+  
   generateRefreshToken(payload: RefreshTokenPayload): string {
     const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXP_TIME_IN_DAYS')}d`;
     return this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn,
     });
-  }
+  }  
 
   async saveAccessToken(userId: number, expiresAt: Date): Promise<AccessToken> {
     return await this.authRepository.createAccessToken(userId, expiresAt);
