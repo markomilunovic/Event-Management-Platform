@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { AuthRequest } from '../interfaces/auth-request.interface';
 import { EventResponseDto } from '../dtos/event-response.dto';
+import { ResponseDto } from 'src/common/dto/response.dto';
 
 @Controller('events')
 export class EventController {
@@ -39,5 +40,15 @@ export class EventController {
   async searchEvents(@Query() searchEventsDto: SearchEventsDto): Promise<EventResponseDto[]> {
     const events = await this.eventService.searchEvents(searchEventsDto);
     return events.map(event => new EventResponseDto(event));
+  }
+
+  @Get('/:id')
+  async getEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<EventResponseDto>> {
+    try {
+      const event = await this.eventService.getEvent(id);
+      return new ResponseDto(new EventResponseDto(event), 'Event retrieved successfully');
+    } catch (error) {
+      throw new InternalServerErrorException('Error retrieving event')
+    }
   }
 }

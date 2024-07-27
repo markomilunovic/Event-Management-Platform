@@ -5,6 +5,7 @@ export class EventResponseDto {
   title: string;
   description: string;
   location: string;
+  category: string;
   date: Date;
   time: string;
 
@@ -13,6 +14,7 @@ export class EventResponseDto {
     this.title = event.title;
     this.description = event.description;
     this.location = event.location;
+    this.category = event.category;
     this.date = event.date;
     this.time = event.time;
   }

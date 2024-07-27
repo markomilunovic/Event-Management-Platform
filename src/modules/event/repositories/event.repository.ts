@@ -35,4 +35,8 @@ export class EventRepository {
 
     return this.eventModel.findAll({ where: whereClause });
   }
+
+  async getEvent(eventId: number): Promise<Event> {
+    return this.eventModel.findByPk(eventId);
+  }
 }

@@ -19,4 +19,8 @@ export class EventService {
   async searchEvents(searchEventsDto: SearchEventsDto): Promise<Event[]> {
     return this.eventRepository.searchEvents(searchEventsDto);
   }
+
+  async getEvent(eventId: number): Promise<Event> {
+    return this.eventRepository.getEvent(eventId);
+  }
 }
