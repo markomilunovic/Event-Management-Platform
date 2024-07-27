@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
@@ -6,6 +6,7 @@ import { SearchEventsDto } from '../dtos/search-events.dto';
 import { AuthRequest } from '../interfaces/auth-request.interface';
 import { EventResponseDto } from '../dtos/event-response.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
+import { UpdateEventDto } from '../dtos/update-event.dto';
 
 @Controller('events')
 export class EventController {
@@ -49,6 +50,18 @@ export class EventController {
       return new ResponseDto(new EventResponseDto(event), 'Event retrieved successfully');
     } catch (error) {
       throw new InternalServerErrorException('Error retrieving event')
+    }
+  }
+
+  @Put('/:id')
+  @UseGuards(JwtUserGuard)
+  async updateEvent(@Body() updateEventDto: UpdateEventDto, @Req() req, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
+    try {
+      const userId = req.user?.id;
+      await this.eventService.updateEvent(id, userId, updateEventDto);
+      return new ResponseDto(null, 'Event updated successfully');
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating event')
     }
   }
 }

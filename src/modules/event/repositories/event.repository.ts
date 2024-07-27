@@ -4,6 +4,7 @@ import { Event } from '../models/event.model';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Op } from 'sequelize';
 import { CreateEventDto } from '../dtos/create-event.dto';
+import { UpdateEventType } from '../utils/types';
 
 @Injectable()
 export class EventRepository {
@@ -38,5 +39,10 @@ export class EventRepository {
 
   async getEvent(eventId: number): Promise<Event> {
     return this.eventModel.findByPk(eventId);
+  }
+
+  async updateEvent(eventId: number, updateEventType: UpdateEventType): Promise<void> {
+    const event = await Event.findByPk(eventId);
+    await event.update(updateEventType);
   }
 }
