@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put, Delete } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
@@ -61,7 +61,25 @@ export class EventController {
       await this.eventService.updateEvent(id, userId, updateEventDto);
       return new ResponseDto(null, 'Event updated successfully');
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Error updating event')
+    }
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtUserGuard)
+  async deleteEvent(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
+    try {
+      const userId = req.user?.id;
+      await this.eventService.deleteEvent(id, userId);
+      return new ResponseDto(null, 'Event deleted successfully');
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error deleting event')
     }
   }
 }

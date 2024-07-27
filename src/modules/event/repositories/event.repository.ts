@@ -45,4 +45,8 @@ export class EventRepository {
     const event = await Event.findByPk(eventId);
     await event.update(updateEventType);
   }
+
+  async deleteEvent(eventId: number): Promise<void> {
+    await Event.destroy({ where: { id: eventId } });
+  }
 }

@@ -30,9 +30,21 @@ export class EventService {
     const eventUserId = (await event).userId;
 
     if (eventUserId != userId) {
-      throw new UnauthorizedException('Only users who created the event can update it');
+
+      throw new UnauthorizedException('Only the user who created the event can update it.');
     }
 
     await this.eventRepository.updateEvent(eventId, updateEventType);
+  }
+
+  async deleteEvent(eventId: number, userId: number): Promise<void> {
+    const event = this.eventRepository.getEvent(eventId);
+    const eventUserId = (await event).userId;
+
+    if (eventUserId != userId) {
+      throw new UnauthorizedException('Only the user who created the event can delete it.');
+    }
+
+    await this.eventRepository.deleteEvent(eventId);
   }
 }
