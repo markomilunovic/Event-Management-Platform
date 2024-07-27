@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EventRepository } from '../repositories/event.repository';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Event } from '../models/event.model';
+import { UpdateEventType } from '../utils/types';
 
 @Injectable()
 export class EventService {
@@ -22,5 +23,16 @@ export class EventService {
 
   async getEvent(eventId: number): Promise<Event> {
     return this.eventRepository.getEvent(eventId);
+  }
+
+  async updateEvent(eventId: number, userId: number, updateEventType: UpdateEventType): Promise<void> {
+    const event = this.eventRepository.getEvent(eventId);
+    const eventUserId = (await event).userId;
+
+    if (eventUserId != userId) {
+      throw new UnauthorizedException('Only users who created the event can update it');
+    }
+
+    await this.eventRepository.updateEvent(eventId, updateEventType);
   }
 }
