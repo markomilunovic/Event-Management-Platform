@@ -4,13 +4,17 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Ticket } from './models/ticket.model';
 import { Event } from '../event/models/event.model';
 import { User } from '../user/models/user.model';
+import { TicketController } from './controllers/ticket.controller';
+import { TicketService } from './services/ticket.service';
+import { TicketRepository } from './repositories/ticket.repository';
+import { QRCodeService } from './services/qrcode.service';
 
 @Module({
     imports: [
         ConfigModule,
         SequelizeModule.forFeature([Ticket, Event, User])
     ],
-    controllers: [],
-    providers: []
+    controllers: [TicketController],
+    providers: [TicketService, TicketRepository, QRCodeService]
 })
 export class TicketModule {}
