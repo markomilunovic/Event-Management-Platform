@@ -1,4 +1,4 @@
-import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Event } from "src/modules/event/models/event.model";
 import { User } from "src/modules/user/models/user.model";
 
@@ -7,6 +7,7 @@ export class Ticket extends Model<Ticket> {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
+        autoIncrement: true
     })
     id: number;
 
