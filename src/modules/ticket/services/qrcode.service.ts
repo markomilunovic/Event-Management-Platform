@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class QRCodeService {
     async generateQRCodeAndSaveFile(data: string): Promise<string> {
         const filename = `${uuidv4()}.png`;
-        const directory = 'C:\\Users\\marko\\Desktop\\event-management-platform\\qr_codes';
+        const directory = 'qr_codes';
         const filePath = path.join(directory, filename);
         
         if (!fs.existsSync(directory)) {
