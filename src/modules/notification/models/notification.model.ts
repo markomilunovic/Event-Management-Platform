@@ -31,4 +31,19 @@ export class Notification extends Model<Notification> {
     })
     status: 'delivered' | 'read';
 
+    @Column({
+        type: DataType.DATE,
+        allowNull: false,
+        defaultValue: DataType.NOW,
+        field: 'created_at',
+      })
+      createdAt: Date;
+    
+      @Column({
+        type: DataType.DATE,
+        allowNull: false,
+        defaultValue: DataType.NOW,
+        field: 'updated_at',
+      })
+      updatedAt: Date;
 }

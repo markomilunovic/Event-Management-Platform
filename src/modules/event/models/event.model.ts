@@ -10,6 +10,14 @@ export class Event extends Model<Event> {
   })
   id: number;
 
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    field: 'user_id',
+  })
+  userId: number;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -46,11 +54,19 @@ export class Event extends Model<Event> {
   })
   time: string;
 
-  @ForeignKey(() => User)
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.DATE,
     allowNull: false,
-    field: 'user_id',
+    defaultValue: DataType.NOW,
+    field: 'created_at',
   })
-  userId: number;
+  createdAt: Date;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW,
+    field: 'updated_at',
+  })
+  updatedAt: Date;
 }

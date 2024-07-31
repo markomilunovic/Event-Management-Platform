@@ -1,4 +1,4 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Event } from "src/modules/event/models/event.model";
 import { User } from "src/modules/user/models/user.model";
 
@@ -13,7 +13,7 @@ export class Ticket extends Model<Ticket> {
 
     @ForeignKey(() => Event)
     @Column({
-        type: DataType.STRING,
+        type: DataType.INTEGER,
         allowNull: false,
         field: 'event_id'
     })
@@ -35,4 +35,19 @@ export class Ticket extends Model<Ticket> {
     })
     qrCode: string;
 
+    @Column({
+        type: DataType.DATE,
+        allowNull: false,
+        defaultValue: DataType.NOW,
+        field: 'created_at',
+      })
+      createdAt: Date;
+    
+      @Column({
+        type: DataType.DATE,
+        allowNull: false,
+        defaultValue: DataType.NOW,
+        field: 'updated_at',
+      })
+      updatedAt: Date;
 }
