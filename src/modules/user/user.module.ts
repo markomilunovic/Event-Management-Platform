@@ -8,6 +8,6 @@ import { UserRepository } from './user.repository';
 @Module({
   imports: [SequelizeModule.forFeature([User])],
   controllers: [UserController],
-  providers: [UserService, UserRepository],
+  providers: [UserService, UserRepository]
 })
 export class UserModule {}
