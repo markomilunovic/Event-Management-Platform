@@ -6,6 +6,7 @@ export class Notification extends Model<Notification> {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
+        autoIncrement: true
     })
     id: number;
 
