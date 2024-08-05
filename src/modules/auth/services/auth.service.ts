@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from '../repositories/auth.repository';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { UserRole } from '../enums/user-role.enum';
 import { LoginUserDto } from '../dtos/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponseDto } from '../dtos/login-response.dto';
@@ -20,7 +21,7 @@ export class AuthService {
   ) {}
 
   async register(createUserDto: CreateUserDto, profilePicture?: string): Promise<UserResponseDto> {
-    const { email, password } = createUserDto;
+    const { email, password, role } = createUserDto;
 
     const existingUser = await this.authRepository.findUserByEmail(email);
     if (existingUser) {
@@ -28,7 +29,10 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await this.authRepository.createUser({ ...createUserDto, password: hashedPassword }, profilePicture);
+    const newUser = await this.authRepository.createUser(
+      { ...createUserDto, password: hashedPassword, role: role || UserRole.USER }, 
+      profilePicture
+    );
     return new UserResponseDto(newUser);
   }
 

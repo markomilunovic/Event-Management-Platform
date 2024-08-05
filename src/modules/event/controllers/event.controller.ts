@@ -7,6 +7,7 @@ import { AuthRequest } from '../interfaces/auth-request.interface';
 import { EventResponseDto } from '../dtos/event-response.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { UpdateEventDto } from '../dtos/update-event.dto';
+import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 
 @Controller('events')
 export class EventController {
@@ -81,5 +82,26 @@ export class EventController {
       }
       throw new InternalServerErrorException('Error deleting event')
     }
+  }
+
+  @Get('admin/events')
+  @UseGuards(JwtUserGuard, AdminGuard)
+  async getNonApprovedEvents(): Promise<EventResponseDto[]> {
+    const events = await this.eventService.getNonApprovedEvents();
+    return events.map(event => new EventResponseDto(event));
+  }
+
+  @Put('admin/events/:id/approve')
+  @UseGuards(JwtUserGuard, AdminGuard)
+  async approveEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
+    await this.eventService.approveEvent(id);
+    return new ResponseDto(null, 'Event approved successfully');
+  }
+
+  @Put('admin/events/:id/reject')
+  @UseGuards(JwtUserGuard, AdminGuard)
+  async rejectEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
+    await this.eventService.rejectEvent(id);
+    return new ResponseDto(null, 'Event rejected successfully');
   }
 }

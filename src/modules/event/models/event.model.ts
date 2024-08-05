@@ -55,6 +55,14 @@ export class Event extends Model<Event> {
   time: string;
 
   @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'is_approved',
+  })
+  isApproved: boolean;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,

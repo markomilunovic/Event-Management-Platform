@@ -20,7 +20,7 @@ export class AuthController {
   ): Promise<UserResponseDto> {
     return this.authService.register(createUserDto, profilePicture?.filename);
   }
-
+  
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async login(@Body() loginUserDto: LoginUserDto): Promise<LoginResponseDto> {

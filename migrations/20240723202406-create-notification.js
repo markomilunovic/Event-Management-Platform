@@ -19,7 +19,7 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       message: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       status: {

@@ -74,5 +74,38 @@ export class EventService {
 
     await this.eventRepository.deleteEvent(eventId);
   }
-}
 
+  async getNonApprovedEvents(): Promise<Event[]> {
+    return this.eventRepository.getNonApprovedEvents();
+  }
+
+  async approveEvent(id: number): Promise<void> {
+    const event = await this.eventRepository.getEvent(id);
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    await this.eventRepository.approveEvent(id);
+    await this.notificationService.createNotification(event.userId, 'Your event has been approved');
+
+    this.notificationGateway.notifyUsers(event.userId, {
+      message: 'Your event has been approved',
+    });
+  }
+
+  async rejectEvent(id: number): Promise<void> {
+    const event = await this.eventRepository.getEvent(id);
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    await this.eventRepository.rejectEvent(id);
+    await this.notificationService.createNotification(event.userId, 'Your event has been rejected');
+
+    this.notificationGateway.notifyUsers(event.userId, {
+      message: 'Your event has been rejected',
+    });
+  }
+}

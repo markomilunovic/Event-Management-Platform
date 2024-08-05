@@ -8,6 +8,16 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'user',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       title: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -32,15 +42,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      user_id: {
-        type: Sequelize.INTEGER,
+      is_approved: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-        references: {
-          model: 'user',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        defaultValue: false,
       },
       created_at: {
         type: Sequelize.DATE,

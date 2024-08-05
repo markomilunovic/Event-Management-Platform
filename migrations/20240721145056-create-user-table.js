@@ -24,6 +24,12 @@ module.exports = {
       profile_picture: {
         type: Sequelize.STRING,
       },
+      role: {
+        type: Sequelize.ENUM,
+        values: ['user', 'admin'],
+        allowNull: false,
+        defaultValue: 'user',
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

@@ -75,6 +75,17 @@ export class EventRepository {
     }
 
     return users;
-}
+  }
 
+  async getNonApprovedEvents(): Promise<Event[]> {
+    return this.eventModel.findAll({ where: { isApproved: false } });
+  }
+
+  async approveEvent(id: number): Promise<void> {
+    await this.eventModel.update({ isApproved: true }, { where: { id } });
+  }
+
+  async rejectEvent(id: number): Promise<void> {
+    await this.eventModel.update({ isApproved: false }, { where: { id } });
+  }
 }

@@ -35,6 +35,14 @@ export class User extends Model<User> {
   profilePicture: string;
 
   @Column({
+    type: DataType.ENUM,
+    values: ['user', 'admin'],
+    allowNull: false,
+    defaultValue: 'user',
+  })
+  role: string;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,
