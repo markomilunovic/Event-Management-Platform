@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, UseGuards } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
 import { NotificationService } from '../services/notification.service';
@@ -14,6 +14,12 @@ export class NotificationController {
     async getNotifications(@Req() req: AuthRequest): Promise<Notification[]> {
         const userId = req.user.id;
         return this.notificationService.getNotificationsByUser(userId);
-  }
+    }
 
+    @UseGuards(JwtUserGuard)
+    @Post('mark-as-read')
+    async markAsRead(@Req() req: AuthRequest, @Body('notificationId') notificationId: number): Promise<Notification> {
+        const userId = req.user.id;
+        return this.notificationService.markNotificationAsRead(userId, notificationId);
+    }
 }

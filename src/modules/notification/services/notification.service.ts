@@ -12,11 +12,16 @@ export class NotificationService {
 
     async getNotificationsByUser(userId: number): Promise<Notification[]> {
         return this.notificationRepository.findNotificationsByUserId(userId);
-  }
+    }
 
-  async createNotification(userId: number, message: string): Promise<Notification> {
-    const notification = await this.notificationRepository.createNotification(userId, message, 'delivered');
-    this.notificationGateway.notifyUsers(userId, notification);
-    return notification;
-  }
+    async createNotification(userId: number, message: string): Promise<Notification> {
+        const notification = await this.notificationRepository.createNotification(userId, message, 'delivered');
+        this.notificationGateway.notifyUsers(userId, notification);
+        return notification;
+    }
+
+    async markNotificationAsRead(userId: number, notificationId: number): Promise<Notification> {
+        const notification = await this.notificationRepository.updateNotificationStatus(userId, notificationId, 'read');
+        return notification;
+    }
 }
