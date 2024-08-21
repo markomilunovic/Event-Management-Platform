@@ -43,6 +43,14 @@ export class User extends Model<User> {
   role: string;
 
   @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    field: 'is_active'
+  })
+  isActive: boolean;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,

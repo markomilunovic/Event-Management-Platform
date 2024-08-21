@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Put, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Put, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { UserResponseDto } from '../auth/dtos/user-response.dto';
@@ -60,6 +60,20 @@ export class UserController {
         }
     }
 
+    @Put('admin/users/:id/deactivate')
+    @UseGuards(JwtUserGuard, AdminGuard)
+    async deactivateUser(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<null>> {
+        try {
+            await this.userService.deactivateUser(id);
+            return new ResponseDto(null, 'User deactivated successfully');
+        } catch (error) {
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            } else {
+                throw new InternalServerErrorException('Error deactivating user');
+            }
+        }
+    }
 
 }
 
