@@ -17,4 +17,8 @@ export class UserRepository {
       await user.update(updateProfileType)
     }
 
+    async getUsers(): Promise<User[]> {
+      return User.findAll();
+    }
+
 }

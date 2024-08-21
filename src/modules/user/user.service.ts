@@ -28,4 +28,9 @@ export class UserService {
         await this.userRepository.updateProfile(userId, updateProfileType);
 
     }
+
+    async getUsers(): Promise<User[]> {
+        const users = await this.userRepository.getUsers();
+        return users;
+    }
 }
