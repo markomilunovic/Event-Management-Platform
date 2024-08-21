@@ -1,11 +1,14 @@
-import { Body, Controller, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Req, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TicketService } from '../services/ticket.service';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
 import { PurchaseTicketDto } from '../dtos/purchase-ticket.dto';
 import { TicketResponseDto } from '../dtos/ticket-response.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
+import { Cacheable } from 'src/modules/caching/decorators/cache.decorator';
+import { CacheInterceptor } from 'src/modules/caching/interceptors/cache.interceptor';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('tickets')
 export class TicketController {
 
@@ -25,6 +28,7 @@ export class TicketController {
     }
 
     @Get()
+    @Cacheable('getTickets')
     @UseGuards(JwtUserGuard)
     async getTickets(@Req() req: AuthRequest): Promise<ResponseDto<TicketResponseDto[]>> {
         try {
@@ -38,6 +42,7 @@ export class TicketController {
     }
 
     @Get(':id')
+    @Cacheable('getTicketById')
     @UseGuards(JwtUserGuard)
     async getTicketById(@Req() req: AuthRequest, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<TicketResponseDto>> {
         try {

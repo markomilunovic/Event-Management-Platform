@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put, Delete, UseInterceptors } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
@@ -8,7 +8,10 @@ import { EventResponseDto } from '../dtos/event-response.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { UpdateEventDto } from '../dtos/update-event.dto';
 import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
+import { Cacheable } from 'src/modules/caching/decorators/cache.decorator';
+import { CacheInterceptor } from 'src/modules/caching/interceptors/cache.interceptor';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('events')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
@@ -27,6 +30,7 @@ export class EventController {
 
   @UseGuards(JwtUserGuard)
   @Get()
+  @Cacheable('getUserEvents')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async getUserEvents(@Req() req: AuthRequest): Promise<EventResponseDto[]> {
     const userId = req.user?.id;
@@ -38,6 +42,7 @@ export class EventController {
   }
 
   @Get('search')
+  @Cacheable('searchEvents')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async searchEvents(@Query() searchEventsDto: SearchEventsDto): Promise<EventResponseDto[]> {
     const events = await this.eventService.searchEvents(searchEventsDto);
@@ -45,6 +50,7 @@ export class EventController {
   }
 
   @Get('/:id')
+  @Cacheable('getEvent')
   async getEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<EventResponseDto>> {
     try {
       const event = await this.eventService.getEvent(id);
@@ -85,6 +91,7 @@ export class EventController {
   }
 
   @Get('admin/events')
+  @Cacheable('getNonApprovedEvents')
   @UseGuards(JwtUserGuard, AdminGuard)
   async getNonApprovedEvents(): Promise<EventResponseDto[]> {
     const events = await this.eventService.getNonApprovedEvents();

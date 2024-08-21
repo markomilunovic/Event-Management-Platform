@@ -7,13 +7,17 @@ import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { Cacheable } from '../caching/decorators/cache.decorator';
+import { CacheInterceptor } from '../caching/interceptors/cache.interceptor';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('users')
 export class UserController {
 
     constructor(private readonly userService: UserService) {}
 
     @Get('profile')
+    @Cacheable('getProfile')
     @UseGuards(JwtUserGuard)
     async getProfile(@Req() req): Promise<ResponseDto<UserResponseDto>> {
         try {
@@ -49,6 +53,7 @@ export class UserController {
     }
 
     @Get('admin/users')
+    @Cacheable('getUsers')
     @UseGuards(JwtUserGuard, AdminGuard)
     async getUsers(): Promise<ResponseDto<UserResponseDto[]>> {
         try {

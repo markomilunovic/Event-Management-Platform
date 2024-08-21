@@ -8,6 +8,7 @@ import { NotificationController } from './controllers/notification.controller';
 import { NotificationService } from './services/notification.service';
 import { NotificationGateway } from './gateway/notification.gateway';
 import { NotificationRepository } from './repositories/notification.repository';
+import { RedisService } from '../caching/services/redis.service';
 
 @Module({
   imports: [
