@@ -6,6 +6,7 @@ import { JwtUserGuard } from '../auth/guards/jwt-user.guard';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @Controller('users')
 export class UserController {
@@ -44,6 +45,18 @@ export class UserController {
             return new ResponseDto(null, 'Profile updated successfully');
         } catch (error) {
             throw new InternalServerErrorException('Error updating user profile');
+        }
+    }
+
+    @Get('admin/users')
+    @UseGuards(JwtUserGuard, AdminGuard)
+    async getUsers(): Promise<ResponseDto<UserResponseDto[]>> {
+        try {
+            const users = await this.userService.getUsers();
+            const userResponseDtos = users.map(user => new UserResponseDto(user));
+            return new ResponseDto(userResponseDtos, 'Users retrieved successfully');
+        } catch (error) {
+            throw new InternalServerErrorException('Error rettrieving users')
         }
     }
 
