@@ -1,7 +1,8 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, Model, Table, ForeignKey } from 'sequelize-typescript';
+import { User } from '../../user/models/user.model';
 
-@Table({ tableName: 'user' })
-export class User extends Model<User> {
+@Table({ tableName: 'event' })
+export class Event extends Model<Event> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -9,46 +10,57 @@ export class User extends Model<User> {
   })
   id: number;
 
+  @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
+    field: 'user_id',
   })
-  name: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-  })
-  email: string;
+  userId: number;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  password: string;
+  title: string;
 
   @Column({
     type: DataType.STRING,
-    field: 'profile_picture',
+    allowNull: false,
   })
-  profilePicture: string;
+  description: string;
 
   @Column({
-    type: DataType.ENUM,
-    values: ['user', 'admin'],
+    type: DataType.STRING,
     allowNull: false,
-    defaultValue: 'user',
   })
-  role: string;
+  location: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  category: string;
+
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: false,
+  })
+  date: Date;
+
+  @Column({
+    type: DataType.TIME,
+    allowNull: false,
+  })
+  time: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
-    defaultValue: true,
-    field: 'is_active'
+    defaultValue: false,
+    field: 'is_approved',
   })
-  isActive: boolean;
+  isApproved: boolean;
 
   @Column({
     type: DataType.DATE,

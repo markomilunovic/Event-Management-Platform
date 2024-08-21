@@ -1,39 +1,51 @@
 'use strict';
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('user', {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable('event', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      name: {
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'user',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      title: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
+      description: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      profile_picture: {
+      location: {
         type: Sequelize.STRING,
-      },
-      role: {
-        type: Sequelize.ENUM,
-        values: ['user', 'admin'],
         allowNull: false,
-        defaultValue: 'user',
       },
-      is_active: {
+      date: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+      },
+      time: {
+        type: Sequelize.TIME,
+        allowNull: false,
+      },
+      category: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      is_approved: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true,
+        defaultValue: false,
       },
       created_at: {
         type: Sequelize.DATE,
@@ -48,7 +60,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('user');
-  },
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable('event');
+  }
 };

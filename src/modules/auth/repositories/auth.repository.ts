@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/modules/user/models/user.model';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
 @Injectable()
 export class AuthRepository {
@@ -20,7 +21,7 @@ export class AuthRepository {
     return this.userModel.findByPk(id);
   }
 
-  async createUser(createUserDto: any, profilePicture?: string): Promise<User> {
+  async createUser(createUserDto: CreateUserDto, profilePicture?: string): Promise<User> {
     return this.userModel.create({ ...createUserDto, profilePicture });
   }
 
