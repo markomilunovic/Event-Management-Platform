@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './models/user.model';
 import { UserRepository } from './user.repository';
 import { UpdateProfileType } from './utils/types';
@@ -32,5 +32,20 @@ export class UserService {
     async getUsers(): Promise<User[]> {
         const users = await this.userRepository.getUsers();
         return users;
+    }
+
+    async deactivateUser(id: number): Promise<void> {
+        const user = await this.userRepository.findUserById(id);
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        if(user.role = 'admin') {
+            throw new BadRequestException('Cannot deactivate admin account');
+        }
+
+        user.isActive = false;
+        await this.userRepository.save(user);
     }
 }

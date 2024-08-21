@@ -6,6 +6,7 @@ export class UserResponseDto {
   email: string;
   profilePicture?: string;
   role: string;
+  isActive: boolean;
 
   constructor(user: User) {
     this.id = user.id;
@@ -13,5 +14,6 @@ export class UserResponseDto {
     this.email = user.email;
     this.profilePicture = user.profilePicture;
     this.role = user.role;
+    this.isActive = user.isActive;
   }
 }

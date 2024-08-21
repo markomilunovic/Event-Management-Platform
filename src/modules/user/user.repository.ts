@@ -21,4 +21,8 @@ export class UserRepository {
       return User.findAll();
     }
 
+    async save(user: User): Promise<void> {
+      await user.save()
+    }
+
 }
