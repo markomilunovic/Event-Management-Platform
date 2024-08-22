@@ -4,9 +4,10 @@ import { Event } from '../models/event.model';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Op } from 'sequelize';
 import { CreateEventDto } from '../dtos/create-event.dto';
-import { UpdateEventType } from '../utils/types';
+import { CheckInActivityType, UpdateEventType } from '../utils/types';
 import { User } from 'src/modules/user/models/user.model';
 import { Ticket } from 'src/modules/ticket/models/ticket.model';
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
 @Injectable()
 export class EventRepository {
@@ -91,6 +92,17 @@ export class EventRepository {
 
   async save(event: Event): Promise<void> {
     await event.save()
+  }
+
+  async createCheckInActivity(checkInActivity: CheckInActivityType): Promise<void> {
+    const { userId, action, timestamp, metadata } = checkInActivity;
+
+        await UserActivity.create({
+            userId: userId,
+            action: action,
+            timestamp: timestamp,
+            metadata: metadata
+        });
   }
 
 }

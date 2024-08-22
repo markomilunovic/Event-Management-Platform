@@ -4,6 +4,8 @@ import { User } from 'src/modules/user/models/user.model';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
+import { LogInActivityType } from '../utils/types';
 
 @Injectable()
 export class AuthRepository {
@@ -49,5 +51,15 @@ export class AuthRepository {
       { isRevoked: true },
       { where: { accessTokenId } },
     );
+  }
+
+  async createLogInActivity(userActivity: LogInActivityType): Promise<void> {
+    const { userId, action, timestamp } = userActivity;
+
+    await UserActivity.create({
+      userId: userId,
+      action: action,
+      timestamp: timestamp
+    });
   }
 }

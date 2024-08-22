@@ -16,6 +16,17 @@ export class TicketService {
         const { eventId } = purchaseTicketType;
         const qrCodeData = `Event-${eventId}-User-${userId}`;
         const qrCodeFilePath = await this.qrCodeService.generateQRCodeAndSaveFile(qrCodeData);
+
+        const purchaseTicketActivity = {
+            userId: userId,
+            action: 'purchase_ticket',
+            timestamp: new Date(),
+            metadata: {eventId}
+        };
+
+        await this.ticketRepository.createPurchaseTicketActivity(purchaseTicketActivity);
+
+
         const ticket = await this.ticketRepository.purchaseTicket(userId, eventId, qrCodeFilePath);
         return ticket;
     }

@@ -11,6 +11,7 @@ import { UserResponseDto } from '../dtos/user-response.dto';
 import { AccessTokenPayload, RefreshTokenPayload } from '../interfaces/token-payloads.interface';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
 @Injectable()
 export class AuthService {
@@ -94,6 +95,15 @@ export class AuthService {
 
     const accessTokenString = this.generateAccessToken(accessTokenPayload);
     const refreshTokenString = this.generateRefreshToken(refreshTokenPayload);
+
+    const userActivity = {
+      userId: user.id,
+      action: 'login',
+      timestamp: new Date(),
+    };
+    
+    await this.authRepository.createLogInActivity(userActivity);
+    
 
     const userResponseDto = new UserResponseDto(user);
     return new LoginResponseDto(accessTokenString, refreshTokenString, userResponseDto);

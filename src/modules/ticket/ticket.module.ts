@@ -9,11 +9,12 @@ import { TicketService } from './services/ticket.service';
 import { TicketRepository } from './repositories/ticket.repository';
 import { QRCodeService } from './services/qrcode.service';
 import { RedisService } from '../caching/services/redis.service';
+import { UserActivity } from '../user/models/user-activity.model';
 
 @Module({
     imports: [
         ConfigModule,
-        SequelizeModule.forFeature([Ticket, Event, User])
+        SequelizeModule.forFeature([Ticket, Event, User, UserActivity])
     ],
     controllers: [TicketController],
     providers: [TicketService, TicketRepository, QRCodeService],
