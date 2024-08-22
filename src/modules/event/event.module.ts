@@ -10,13 +10,14 @@ import { Ticket } from '../ticket/models/ticket.model';
 import { Notification } from '../notification/models/notification.model';
 import { User } from '../user/models/user.model';
 import { TicketModule } from '../ticket/ticket.module';
+import { UserActivity } from '../user/models/user-activity.model';
 
 @Module({
   imports: [
     ConfigModule,
-    SequelizeModule.forFeature([Event, Ticket, Notification, User]),
+    SequelizeModule.forFeature([Event, Ticket, Notification, User, UserActivity]),
     NotificationModule,
-    forwardRef(() => TicketModule),
+    TicketModule
   ],
   controllers: [EventController],
   providers: [EventService, EventRepository],

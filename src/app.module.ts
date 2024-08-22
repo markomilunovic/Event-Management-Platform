@@ -16,6 +16,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { Notification } from './modules/notification/models/notification.model';
 import { CachingModule } from './modules/caching/caching.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { UserActivity } from './modules/user/models/user-activity.model';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
         database: configService.get<string>('DB_NAME'),
         autoLoadModels: true,
         synchronize: true,
-        models: [User, AccessToken, RefreshToken, Event, Ticket, Notification],
+        models: [User, AccessToken, RefreshToken, Event, Ticket, Notification, UserActivity],
       }),
       inject: [ConfigService],
     }),

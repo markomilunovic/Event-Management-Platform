@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Req, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Post, Req, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TicketService } from '../services/ticket.service';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
@@ -23,7 +23,11 @@ export class TicketController {
             const ticket = await this.ticketService.purchaseTicket(userId, purchaseTicketDto);
             return new ResponseDto(new TicketResponseDto(ticket), 'Ticket purchased successfully.');
         } catch (error) {
-            throw new InternalServerErrorException('Ticket purchase failed. Please retry.');
+            if (error instanceof NotFoundException) {
+                throw error;
+            } else {
+                throw new InternalServerErrorException('Ticket purchase failed. Please retry.');
+            }
         }
     }
 

@@ -133,6 +133,16 @@ export class EventService {
 
     event.attendanceCount += 1;
     await this.eventRepository.save(event);
+
+    const checkInActivity = {
+      userId: userId,
+      action: 'check_in',
+      timestamp: new Date(),
+      metadata: {eventId}
+    };
+
+    await this.eventRepository.createCheckInActivity(checkInActivity);
+    
   }
 
 }

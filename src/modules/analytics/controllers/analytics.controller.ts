@@ -11,10 +11,10 @@ export class AnalyticsController {
 
     @Get('event-attendance/:eventId')
     @UseGuards(JwtUserGuard, AdminGuard)
-    async getEventAttendance(@Param('eventId') eventId: number): Promise<ResponseDto<void>> {
+    async getEventAttendance(@Param('eventId') eventId: number): Promise<ResponseDto<number>> {
         try{
             const eventAttendance = await this.analyticsService.getEventAttendance(eventId);
-            return new ResponseDto(null, `The attendance for the event is ${eventAttendance}.`);
+            return new ResponseDto(eventAttendance, `The attendance for the event is ${eventAttendance}.`);
         } catch (error) {
             if (error instanceof NotFoundException){
                 throw error;

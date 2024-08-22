@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket } from '../models/ticket.model';
+import { PurchaseTicketActiityType } from '../utils/types';
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
 @Injectable()
 export class TicketRepository {
@@ -24,4 +26,16 @@ export class TicketRepository {
     async save(ticket: Ticket): Promise<void> {
         await ticket.save();
     }
+
+    async createPurchaseTicketActivity(purchaseTicketActivity: PurchaseTicketActiityType): Promise<void> {
+        const { userId, action, timestamp, metadata } = purchaseTicketActivity;
+
+        await UserActivity.create({
+            userId: userId,
+            action: action,
+            timestamp: timestamp,
+            metadata: metadata
+        });
+    }
+
 }

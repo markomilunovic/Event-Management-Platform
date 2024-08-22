@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TicketRepository } from '../repositories/ticket.repository';
 import { PurchaseTicketType } from '../utils/types';
 import { Ticket } from '../models/ticket.model';
@@ -18,13 +18,26 @@ export class TicketService {
         const { eventId } = purchaseTicketType;
         const qrCodeData = `Event-${eventId}-User-${userId}`;
         const qrCodeFilePath = await this.qrCodeService.generateQRCodeAndSaveFile(qrCodeData);
+
+        const purchaseTicketActivity = {
+            userId: userId,
+            action: 'purchase_ticket',
+            timestamp: new Date(),
+            metadata: {eventId}
+        };
+
+        await this.ticketRepository.createPurchaseTicketActivity(purchaseTicketActivity);
+
+
         const ticket = await this.ticketRepository.purchaseTicket(userId, eventId, qrCodeFilePath);
 
         const event = await this.eventRepository.getEvent(eventId);
-        if (event) {
-            event.ticketsSold += 1;
-            await this.eventRepository.save(event);
+        if (!event) {
+            throw new NotFoundException('Event Not Found')
         }
+
+        event.ticketsSold += 1;
+        await this.eventRepository.save(event);
 
         return ticket;
     }

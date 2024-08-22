@@ -10,6 +10,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from 'src/modules/user/models/user.model';
 import { AccessToken } from './models/access-token.model';
 import { RefreshToken } from './models/refresh-token.model';
+import { UserActivity } from '../user/models/user-activity.model';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { RefreshToken } from './models/refresh-token.model';
       },
       inject: [ConfigService],
     }),
-    SequelizeModule.forFeature([User, AccessToken, RefreshToken]),
+    SequelizeModule.forFeature([User, AccessToken, RefreshToken, UserActivity]),
   ],
   providers: [AuthService, AuthRepository, JwtUserStrategy],
   controllers: [AuthController],

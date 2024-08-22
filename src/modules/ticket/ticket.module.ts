@@ -8,13 +8,13 @@ import { TicketController } from './controllers/ticket.controller';
 import { TicketService } from './services/ticket.service';
 import { TicketRepository } from './repositories/ticket.repository';
 import { QRCodeService } from './services/qrcode.service';
-import { RedisService } from '../caching/services/redis.service';
+import { UserActivity } from '../user/models/user-activity.model';
 import { EventModule } from '../event/event.module';
 
 @Module({
   imports: [
     ConfigModule,
-    SequelizeModule.forFeature([Ticket, Event, User]),
+    SequelizeModule.forFeature([Ticket, Event, User, UserActivity]),
     forwardRef(() => EventModule),
   ],
   controllers: [TicketController],
