@@ -4,10 +4,11 @@ import { AnalyticsService } from './services/analytics.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AnalyticsRepository } from './repositories/analytics.repository';
 import { Event } from '../event/models/event.model';
+import { UserActivity } from '../user/models/user-activity.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Event])
+    SequelizeModule.forFeature([Event, UserActivity])
 ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService, AnalyticsRepository]

@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { AnalyticsRepository } from '../repositories/analytics.repository';
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
 @Injectable()
 export class AnalyticsService {
 
-    constructor(private readonly analyticsRepository: AnalyticsRepository) {}
+    constructor(
+        private readonly analyticsRepository: AnalyticsRepository, 
+        @InjectModel(UserActivity) private readonly userActivityModel: typeof UserActivity,
+    ) {}
 
 
     async getEventAttendance(eventId: number) {
@@ -27,5 +32,15 @@ export class AnalyticsService {
         }
 
         return event.ticketsSold;
+    }
+
+    async getUserActivity(userId: number): Promise<UserActivity[]> {
+        const activities = await this.userActivityModel.findAll({ where: { userId } });
+        
+        if (!activities || activities.length === 0) {
+            throw new NotFoundException(`No activities found for user with ID ${userId}`);
+        }
+        
+        return activities;
     }
 }
