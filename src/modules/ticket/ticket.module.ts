@@ -16,6 +16,7 @@ import { RedisService } from '../caching/services/redis.service';
         SequelizeModule.forFeature([Ticket, Event, User])
     ],
     controllers: [TicketController],
-    providers: [TicketService, TicketRepository, QRCodeService]
+    providers: [TicketService, TicketRepository, QRCodeService],
+    exports: [TicketRepository]
 })
 export class TicketModule {}

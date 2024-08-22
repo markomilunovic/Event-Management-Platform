@@ -88,4 +88,9 @@ export class EventRepository {
   async rejectEvent(id: number): Promise<void> {
     await this.eventModel.update({ isApproved: false }, { where: { id } });
   }
+
+  async save(event: Event): Promise<void> {
+    await event.save()
+  }
+
 }

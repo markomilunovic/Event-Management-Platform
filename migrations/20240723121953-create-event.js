@@ -47,6 +47,10 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
+      attendance_count: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

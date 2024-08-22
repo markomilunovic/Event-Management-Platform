@@ -6,12 +6,14 @@ import { Event } from '../models/event.model';
 import { UpdateEventType } from '../utils/types';
 import { NotificationService } from 'src/modules/notification/services/notification.service';
 import { NotificationGateway } from 'src/modules/notification/gateway/notification.gateway';
+import { TicketRepository } from 'src/modules/ticket/repositories/ticket.repository';
 
 @Injectable()
 export class EventService {
   constructor(private readonly eventRepository: EventRepository,
               private readonly notificationService: NotificationService,
-              private readonly notificationGateway: NotificationGateway
+              private readonly notificationGateway: NotificationGateway,
+              private readonly ticketRepository: TicketRepository
   ) {}
 
   async createEvent(createEventDto: CreateEventDto, userId: number): Promise<Event> {
@@ -108,4 +110,29 @@ export class EventService {
       message: 'Your event has been rejected',
     });
   }
+
+  async checkInToEvent(eventId: number, userId: number): Promise<void> {
+    const event = await this.eventRepository.getEvent(eventId);
+
+    if(!event) {
+      throw new NotFoundException('Event Not Found');
+    }
+
+    const ticket = await this.ticketRepository.findUserTicketForEvent(userId, eventId);
+
+    if(!ticket) {
+      throw new UnauthorizedException('User does not have a valid ticket for this event');
+    }
+
+    if (ticket.checkedIn) {
+      throw new UnauthorizedException('User has already checked in to this event');
+    }
+
+    ticket.checkedIn = true;
+    await this.ticketRepository.save(ticket);
+
+    event.attendanceCount += 1;
+    await this.eventRepository.save(event);
+  }
+
 }

@@ -36,6 +36,13 @@ export class Ticket extends Model<Ticket> {
     qrCode: string;
 
     @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+        field: 'checked_in',
+      })
+      checkedIn: boolean;
+
+    @Column({
         type: DataType.DATE,
         allowNull: false,
         defaultValue: DataType.NOW,

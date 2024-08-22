@@ -15,6 +15,7 @@ import { Ticket } from './modules/ticket/models/ticket.model';
 import { NotificationModule } from './modules/notification/notification.module';
 import { Notification } from './modules/notification/models/notification.model';
 import { CachingModule } from './modules/caching/caching.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { CachingModule } from './modules/caching/caching.module';
     EventModule,
     TicketModule,
     NotificationModule,
-    CachingModule
+    CachingModule,
+    AnalyticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
