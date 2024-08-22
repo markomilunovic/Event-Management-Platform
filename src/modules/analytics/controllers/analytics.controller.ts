@@ -23,4 +23,19 @@ export class AnalyticsController {
             }
         }
     }
+
+    @Get('tickets-sold/:eventId')
+    @UseGuards(JwtUserGuard, AdminGuard)
+    async getTicketsSold(@Param('eventId') eventId: number): Promise<ResponseDto<number>> {
+        try {
+            const ticketsSold = await this.analyticsService.getTicketsSold(eventId);
+            return new ResponseDto(ticketsSold, `Tickets sold for the event: ${ticketsSold}.`);
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            } else {
+                throw new InternalServerErrorException('Error retrieving tickets sold data');
+            }
+        }
+    }
 }

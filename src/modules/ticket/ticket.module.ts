@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Ticket } from './models/ticket.model';
@@ -9,14 +9,16 @@ import { TicketService } from './services/ticket.service';
 import { TicketRepository } from './repositories/ticket.repository';
 import { QRCodeService } from './services/qrcode.service';
 import { RedisService } from '../caching/services/redis.service';
+import { EventModule } from '../event/event.module';
 
 @Module({
-    imports: [
-        ConfigModule,
-        SequelizeModule.forFeature([Ticket, Event, User])
-    ],
-    controllers: [TicketController],
-    providers: [TicketService, TicketRepository, QRCodeService],
-    exports: [TicketRepository]
+  imports: [
+    ConfigModule,
+    SequelizeModule.forFeature([Ticket, Event, User]),
+    forwardRef(() => EventModule),
+  ],
+  controllers: [TicketController],
+  providers: [TicketService, TicketRepository, QRCodeService],
+  exports: [TicketRepository],
 })
 export class TicketModule {}

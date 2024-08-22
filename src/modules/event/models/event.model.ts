@@ -70,6 +70,14 @@ export class Event extends Model<Event> {
   attendanceCount: number;
 
   @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    field: 'tickets_sold',
+  })
+  ticketsSold: number;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,

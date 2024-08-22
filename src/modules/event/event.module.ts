@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Event } from './models/event.model';
@@ -12,13 +12,14 @@ import { User } from '../user/models/user.model';
 import { TicketModule } from '../ticket/ticket.module';
 
 @Module({
-    imports: [
-        ConfigModule,
-        SequelizeModule.forFeature([Event, Ticket, Notification, User]),
-        NotificationModule,
-        TicketModule
-    ],
-    controllers: [EventController],
-    providers: [EventService, EventRepository]
+  imports: [
+    ConfigModule,
+    SequelizeModule.forFeature([Event, Ticket, Notification, User]),
+    NotificationModule,
+    forwardRef(() => TicketModule),
+  ],
+  controllers: [EventController],
+  providers: [EventService, EventRepository],
+  exports: [EventRepository],
 })
 export class EventModule {}

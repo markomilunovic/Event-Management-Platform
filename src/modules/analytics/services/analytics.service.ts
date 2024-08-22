@@ -19,5 +19,13 @@ export class AnalyticsService {
         return eventAttendance;
     }
 
+    async getTicketsSold(eventId: number): Promise<number> {
+        const event = await this.analyticsRepository.getEvent(eventId);
 
+        if (!event) {
+            throw new NotFoundException('Event not found');
+        }
+
+        return event.ticketsSold;
+    }
 }
