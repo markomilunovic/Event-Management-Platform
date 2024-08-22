@@ -63,6 +63,13 @@ export class Event extends Model<Event> {
   isApproved: boolean;
 
   @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    field: 'attendance_count'
+  })
+  attendanceCount: number;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,

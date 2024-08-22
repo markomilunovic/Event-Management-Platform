@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put, Delete, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Req, UnauthorizedException, UsePipes, ValidationPipe, Param, ParseIntPipe, InternalServerErrorException, Put, Delete, UseInterceptors, NotFoundException } from '@nestjs/common';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { EventService } from '../services/event.service';
 import { CreateEventDto } from '../dtos/create-event.dto';
@@ -111,4 +111,21 @@ export class EventController {
     await this.eventService.rejectEvent(id);
     return new ResponseDto(null, 'Event rejected successfully');
   }
+
+  @Post(':eventId/check-in')
+  @UseGuards(JwtUserGuard)
+  async checkInToEvent(@Param('eventId') eventId: number, @Req() req: AuthRequest): Promise<ResponseDto<void>> {
+    try{
+      const userId = req.user.id;
+      await this.eventService.checkInToEvent(eventId, userId);
+      return new ResponseDto(null, 'Check in to event successfull')
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException('Error checking in to the event');
+      }
+    }
+  }
+
 }

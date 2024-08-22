@@ -16,4 +16,12 @@ export class TicketRepository {
     async findTicketById(userId: number, ticketId: number): Promise<Ticket> {
         return Ticket.findOne({ where: { id: ticketId, userId } });
     }
+
+    async findUserTicketForEvent(userId: number, eventId: number): Promise<Ticket> {
+        return await Ticket.findOne({ where: { eventId, userId } });
+    }
+
+    async save(ticket: Ticket): Promise<void> {
+        await ticket.save();
+    }
 }
