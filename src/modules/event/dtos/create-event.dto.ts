@@ -1,5 +1,6 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
+// Voleo bih da istrazite Open API Swagger docs, da probamo da implementiramo to
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()

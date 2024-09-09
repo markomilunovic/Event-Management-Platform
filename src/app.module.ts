@@ -1,26 +1,28 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User } from './modules/user/models/user.model';
+import { AuthModule } from './modules/auth/auth.module';
 import { AccessToken } from './modules/auth/models/access-token.model';
 import { RefreshToken } from './modules/auth/models/refresh-token.model';
-import { Event } from './modules/event/models/event.model';
 import { EventModule } from './modules/event/event.module';
-import { TicketModule } from './modules/ticket/ticket.module';
-import { Ticket } from './modules/ticket/models/ticket.model';
+import { Event } from './modules/event/models/event.model';
 import { NotificationModule } from './modules/notification/notification.module';
-import { Notification } from './modules/notification/models/notification.model';
-import { CachingModule } from './modules/caching/caching.module';
+import { Ticket } from './modules/ticket/models/ticket.model';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { User } from './modules/user/models/user.model';
+import { UserModule } from './modules/user/user.module';
 
+// Obratite paznju na trenutno grupisanje importa u ovom fajlu
+// Trebalo bi da imate oboje konfigurisan linter i prettier kako bi vam automatski sortirao importe i izbacio one koji se ne koriste
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // Mislim da bi bilo od velikih beneficija da probate da zamenite sequelize sa TypeORM-om
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -46,4 +48,4 @@ import { CachingModule } from './modules/caching/caching.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

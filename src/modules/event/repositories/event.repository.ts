@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Event } from '../models/event.model';
-import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Op } from 'sequelize';
-import { CreateEventDto } from '../dtos/create-event.dto';
-import { UpdateEventType } from '../utils/types';
-import { User } from 'src/modules/user/models/user.model';
 import { Ticket } from 'src/modules/ticket/models/ticket.model';
+import { User } from 'src/modules/user/models/user.model';
+
+import { CreateEventDto } from '../dtos/create-event.dto';
+import { SearchEventsDto } from '../dtos/search-events.dto';
+import { Event } from '../models/event.model';
+import { UpdateEventType } from '../utils/types';
 
 @Injectable()
 export class EventRepository {
@@ -14,7 +15,7 @@ export class EventRepository {
     @InjectModel(Event) private readonly eventModel: typeof Event,
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Ticket) private ticketModel: typeof Ticket
-  ) {}
+  ) { }
 
   async createEvent(createEventDto: CreateEventDto, userId: number): Promise<Event> {
     return this.eventModel.create({ ...createEventDto, userId });
@@ -58,11 +59,12 @@ export class EventRepository {
 
     const tickets = await this.ticketModel.findAll({ where: { eventId: eventId } });
 
-    if (!tickets.length) {
+    // Ovde moze da se desi da tickets bude null, u tom slucaju dobicete runtime error
+    if (!tickets?.length) {
       throw new Error('No tickets found for the given event');
     }
 
-    const userIds = tickets.map(ticket => ticket.userId); 
+    const userIds = tickets.map(ticket => ticket.userId);
 
     // Remove duplicate userIds
     const uniqueUserIds = [...new Set(userIds)];

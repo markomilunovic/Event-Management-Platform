@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { EventRepository } from '../repositories/event.repository';
+import { NotificationGateway } from 'src/modules/notification/gateway/notification.gateway';
+import { NotificationService } from 'src/modules/notification/services/notification.service';
+
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Event } from '../models/event.model';
+import { EventRepository } from '../repositories/event.repository';
 import { UpdateEventType } from '../utils/types';
-import { NotificationService } from 'src/modules/notification/services/notification.service';
-import { NotificationGateway } from 'src/modules/notification/gateway/notification.gateway';
 
 @Injectable()
 export class EventService {
   constructor(private readonly eventRepository: EventRepository,
-              private readonly notificationService: NotificationService,
-              private readonly notificationGateway: NotificationGateway
-  ) {}
+    private readonly notificationService: NotificationService,
+    private readonly notificationGateway: NotificationGateway
+  ) { }
 
   async createEvent(createEventDto: CreateEventDto, userId: number): Promise<Event> {
     return this.eventRepository.createEvent(createEventDto, userId);
@@ -48,13 +49,13 @@ export class EventService {
 
     const message = `Event "${(await event).title}" has been updated.`;
     await this.notifyUsersAboutEventUpdate(eventId, message);
-    
+
   }
 
   private async notifyUsersAboutEventUpdate(eventId: number, message: string) {
 
     const usersToNotify = await this.eventRepository.getUsersForEvent(eventId);
-    
+
     for (const user of usersToNotify) {
       // Create a notification record (if needed)
       const notification = await this.notificationService.createNotification(user.id, message);
