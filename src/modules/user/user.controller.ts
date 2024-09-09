@@ -9,7 +9,11 @@ import { multerConfig } from 'src/config/multer.config';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { Cacheable } from '../caching/decorators/cache.decorator';
 import { CacheInterceptor } from '../caching/interceptors/cache.interceptor';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Users')
+@UseGuards(JwtUserGuard)
+@ApiBearerAuth()
 @UseInterceptors(CacheInterceptor)
 @Controller('users')
 export class UserController {
@@ -18,12 +22,13 @@ export class UserController {
 
     @Get('profile')
     @Cacheable('getProfile')
-    @UseGuards(JwtUserGuard)
+    @ApiOperation({ summary: 'Get user profile' })
+    @ApiResponse({ status: 200, description: 'User profile retrieved successfully', type: UserResponseDto })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiResponse({ status: 500, description: 'Internal server error' })
     async getProfile(@Req() req): Promise<ResponseDto<UserResponseDto>> {
         try {
-
             const userId = req.user?.id;
-
             const userProfile = await this.userService.getProfile(userId);
         
             if (!userProfile) {
@@ -37,12 +42,14 @@ export class UserController {
     }
 
     @Put('profile')
-    @UseGuards(JwtUserGuard)
     @UseInterceptors(FileInterceptor('profilePicture', multerConfig))
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ApiOperation({ summary: 'Update user profile' })
+    @ApiResponse({ status: 200, description: 'Profile updated successfully' })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiResponse({ status: 500, description: 'Internal server error' })
     async updateProfile(@Req() req, @Body() updateProfileDto: UpdateProfileDto, @UploadedFile() profilePicture: Express.Multer.File): Promise<ResponseDto<void>> {
         try {
-
             const userId = req.user?.id;
             await this.userService.updateProfile(userId, updateProfileDto, profilePicture?.filename);
 
@@ -53,20 +60,28 @@ export class UserController {
     }
 
     @Get('admin/users')
+    @UseGuards(AdminGuard)
     @Cacheable('getUsers')
-    @UseGuards(JwtUserGuard, AdminGuard)
+    @ApiOperation({ summary: 'Get all users' })
+    @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserResponseDto] })
+    @ApiResponse({ status: 500, description: 'Internal server error' })
     async getUsers(): Promise<ResponseDto<UserResponseDto[]>> {
         try {
             const users = await this.userService.getUsers();
             const userResponseDtos = users.map(user => new UserResponseDto(user));
             return new ResponseDto(userResponseDtos, 'Users retrieved successfully');
         } catch (error) {
-            throw new InternalServerErrorException('Error rettrieving users')
+            throw new InternalServerErrorException('Error retrieving users');
         }
     }
 
     @Put('admin/users/:id/deactivate')
-    @UseGuards(JwtUserGuard, AdminGuard)
+    @UseGuards(AdminGuard)
+    @ApiOperation({ summary: 'Deactivate a user' })
+    @ApiResponse({ status: 200, description: 'User deactivated successfully' })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiResponse({ status: 500, description: 'Internal server error' })
     async deactivateUser(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<null>> {
         try {
             await this.userService.deactivateUser(id);
@@ -79,6 +94,4 @@ export class UserController {
             }
         }
     }
-
 }
-

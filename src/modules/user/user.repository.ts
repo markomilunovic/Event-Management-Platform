@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './models/user.model';
-import { UpdateProfileType } from './utils/types';
+import { UpdateProfileType } from './types/types';
 
 @Injectable()
 export class UserRepository {
