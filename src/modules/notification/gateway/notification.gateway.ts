@@ -1,17 +1,26 @@
-import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { Inject, LoggerService } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Server, Socket } from 'socket.io';
 import { JwtPayload } from 'src/modules/auth/interfaces/token-payloads.interface';
-import { Inject, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @WebSocketGateway()
-export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   constructor(
     private jwtService: JwtService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {}
 
   handleConnection(client: Socket) {
@@ -35,7 +44,9 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
       // Extract token from query parameters
       if (client.handshake.query.token) {
-        token = Array.isArray(client.handshake.query.token) ? client.handshake.query.token[0] : client.handshake.query.token;
+        token = Array.isArray(client.handshake.query.token)
+          ? client.handshake.query.token[0]
+          : client.handshake.query.token;
         this.logger.log('Received token from query:', token);
       }
 

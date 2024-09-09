@@ -1,4 +1,11 @@
-import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+
 import { AccessToken } from './access-token.model';
 
 @Table({ tableName: 'refresh_token' })

@@ -1,5 +1,4 @@
 export enum NotificationStatus {
-    DELIVERED = 'delivered',
-    READ = 'read',
-  }
-  
+  DELIVERED = 'delivered',
+  READ = 'read',
+}

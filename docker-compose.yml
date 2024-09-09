@@ -2,10 +2,10 @@ version: '3.8'
 services:
   app:
     build:
-      context: . 
-      dockerfile: docker/Dockerfile 
+      context: .
+      dockerfile: docker/Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -22,17 +22,17 @@ services:
   mysql:
     image: mysql:latest
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     networks:
       - nestProject
-  
+
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - nestProject
 

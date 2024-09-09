@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationRepository } from '../repositories/notification.repository';
+
+import { NotificationStatus } from '../enums/notification-status.enum';
 import { NotificationGateway } from '../gateway/notification.gateway';
 import { Notification } from '../models/notification.model';
-import { NotificationStatus } from '../enums/notification-status.enum';
+import { NotificationRepository } from '../repositories/notification.repository';
 
 @Injectable()
 export class NotificationService {
-
   constructor(
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationGateway: NotificationGateway,
@@ -27,8 +27,15 @@ export class NotificationService {
    * @param {string} message - The message content of the notification.
    * @returns {Promise<Notification>} - A promise that resolves to the newly created notification.
    */
-  async createNotification(userId: number, message: string): Promise<Notification> {
-    const notification = await this.notificationRepository.createNotification(userId, message, NotificationStatus.DELIVERED);
+  async createNotification(
+    userId: number,
+    message: string,
+  ): Promise<Notification> {
+    const notification = await this.notificationRepository.createNotification(
+      userId,
+      message,
+      NotificationStatus.DELIVERED,
+    );
     this.notificationGateway.notifyUsers(userId, notification);
     return notification;
   }
@@ -39,8 +46,16 @@ export class NotificationService {
    * @param {number} notificationId - The ID of the notification to be marked as read.
    * @returns {Promise<Notification>} - A promise that resolves to the updated notification.
    */
-  async markNotificationAsRead(userId: number, notificationId: number): Promise<Notification> {
-    const notification = await this.notificationRepository.updateNotificationStatus(userId, notificationId, NotificationStatus.READ);
+  async markNotificationAsRead(
+    userId: number,
+    notificationId: number,
+  ): Promise<Notification> {
+    const notification =
+      await this.notificationRepository.updateNotificationStatus(
+        userId,
+        notificationId,
+        NotificationStatus.READ,
+      );
     return notification;
   }
 }

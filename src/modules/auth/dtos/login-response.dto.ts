@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import { ApiProperty } from "@nestjs/swagger";
 import { UserResponseDto } from "./user-response.dto";
+=======
+import { UserResponseDto } from './user-response.dto';
+>>>>>>> fix-eslint-prettier-setup
 
 export class LoginResponseDto {
   @ApiProperty({ description: 'Access token for the user session', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
@@ -11,7 +15,11 @@ export class LoginResponseDto {
   @ApiProperty({ description: 'Details of the authenticated user', type: UserResponseDto })
   user: UserResponseDto;
 
-  constructor(accessToken: string, refreshToken: string, user: UserResponseDto) {
+  constructor(
+    accessToken: string,
+    refreshToken: string,
+    user: UserResponseDto,
+  ) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.user = user;

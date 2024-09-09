@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('event', {
       id: {
         type: Sequelize.INTEGER,
@@ -13,10 +13,10 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'user',
-          key: 'id'
+          key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
       title: {
         type: Sequelize.STRING,
@@ -64,7 +64,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('event');
-  }
+  },
 };

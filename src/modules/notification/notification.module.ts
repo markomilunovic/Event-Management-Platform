@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
-import { Notification } from './models/notification.model';
-import { User } from '../user/models/user.model';
+import { SequelizeModule } from '@nestjs/sequelize';
+
 import { NotificationController } from './controllers/notification.controller';
-import { NotificationService } from './services/notification.service';
 import { NotificationGateway } from './gateway/notification.gateway';
+import { Notification } from './models/notification.model';
 import { NotificationRepository } from './repositories/notification.repository';
+import { NotificationService } from './services/notification.service';
+import { User } from '../user/models/user.model';
 
 @Module({
   imports: [

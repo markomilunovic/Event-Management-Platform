@@ -1,10 +1,17 @@
-import { Column, DataType, Model, Table, ForeignKey } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  Model,
+  Table,
+  ForeignKey,
+} from 'sequelize-typescript';
+
 import { User } from './user.model';
 
-@Table({ 
+@Table({
   tableName: 'user_activity',
-  timestamps: false
- })
+  timestamps: false,
+})
 export class UserActivity extends Model<UserActivity> {
   @ForeignKey(() => User)
   @Column({

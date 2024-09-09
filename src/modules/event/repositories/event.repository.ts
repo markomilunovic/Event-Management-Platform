@@ -1,23 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Event } from '../models/event.model';
-import { SearchEventsDto } from '../dtos/search-events.dto';
+
 import { Op } from 'sequelize';
-import { CreateEventDto } from '../dtos/create-event.dto';
-import { CheckInActivityType, UpdateEventType } from '../types/types';
-import { User } from 'src/modules/user/models/user.model';
 import { Ticket } from 'src/modules/ticket/models/ticket.model';
 import { UserActivity } from 'src/modules/user/models/user-activity.model';
+import { User } from 'src/modules/user/models/user.model';
+
+import { CreateEventDto } from '../dtos/create-event.dto';
+import { SearchEventsDto } from '../dtos/search-events.dto';
+import { Event } from '../models/event.model';
+import { CheckInActivityType, UpdateEventType } from '../types/types';
 
 @Injectable()
 export class EventRepository {
   constructor(
     @InjectModel(Event) private readonly eventModel: typeof Event,
     @InjectModel(User) private userModel: typeof User,
-    @InjectModel(Ticket) private ticketModel: typeof Ticket
+    @InjectModel(Ticket) private ticketModel: typeof Ticket,
   ) {}
 
-  async createEvent(createEventDto: CreateEventDto, userId: number): Promise<Event> {
+  async createEvent(
+    createEventDto: CreateEventDto,
+    userId: number,
+  ): Promise<Event> {
     return this.eventModel.create({ ...createEventDto, userId });
   }
 
@@ -46,7 +51,10 @@ export class EventRepository {
     return this.eventModel.findByPk(eventId);
   }
 
-  async updateEvent(eventId: number, updateEventType: UpdateEventType): Promise<void> {
+  async updateEvent(
+    eventId: number,
+    updateEventType: UpdateEventType,
+  ): Promise<void> {
     const event = await Event.findByPk(eventId);
     await event.update(updateEventType);
   }
@@ -56,20 +64,23 @@ export class EventRepository {
   }
 
   async getUsersForEvent(eventId: number): Promise<User[]> {
-
-    const tickets = await this.ticketModel.findAll({ where: { eventId: eventId } });
+    const tickets = await this.ticketModel.findAll({
+      where: { eventId: eventId },
+    });
 
     if (!tickets?.length) {
       throw new Error('No tickets found for the given event');
     }
 
-    const userIds = tickets.map(ticket => ticket.userId); 
+    const userIds = tickets.map((ticket) => ticket.userId);
 
     // Remove duplicate userIds
     const uniqueUserIds = [...new Set(userIds)];
 
     // Find all users associated with these userIds
-    const users = await this.userModel.findAll({ where: { id: uniqueUserIds } });
+    const users = await this.userModel.findAll({
+      where: { id: uniqueUserIds },
+    });
 
     if (!users?.length) {
       throw new Error('No users found for the tickets');
@@ -91,18 +102,19 @@ export class EventRepository {
   }
 
   async save(event: Event): Promise<void> {
-    await event.save()
+    await event.save();
   }
 
-  async createCheckInActivity(checkInActivity: CheckInActivityType): Promise<void> {
+  async createCheckInActivity(
+    checkInActivity: CheckInActivityType,
+  ): Promise<void> {
     const { userId, action, timestamp, metadata } = checkInActivity;
 
-        await UserActivity.create({
-            userId: userId,
-            action: action,
-            timestamp: timestamp,
-            metadata: metadata
-        });
+    await UserActivity.create({
+      userId: userId,
+      action: action,
+      timestamp: timestamp,
+      metadata: metadata,
+    });
   }
-
 }

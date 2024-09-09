@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('notification', {
       id: {
         type: Sequelize.INTEGER,
@@ -23,7 +23,7 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: Sequelize.ENUM('delivered', "read"),
+        type: Sequelize.ENUM('delivered', 'read'),
         allowNull: false,
       },
       created_at: {
@@ -36,10 +36,10 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.NOW,
       },
-    })
+    });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('notification');
-  }
+  },
 };
