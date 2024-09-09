@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req, Body, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
 import { NotificationService } from '../services/notification.service';

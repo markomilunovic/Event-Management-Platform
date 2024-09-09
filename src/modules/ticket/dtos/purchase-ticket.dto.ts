@@ -1,8 +1,12 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PurchaseTicketDto {
-    @IsNotEmpty({ message: 'EventId is required' })
-    @IsNumber()
-    eventId: number;
-
+  @ApiProperty({
+    description: 'The ID of the event for which the ticket is being purchased',
+    example: 1,
+  })
+  @IsNotEmpty({ message: 'EventId is required' })
+  @IsNumber()
+  eventId: number;
 }

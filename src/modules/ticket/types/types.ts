@@ -2,7 +2,7 @@ export type PurchaseTicketType = {
     eventId: number;
 }
 
-export type PurchaseTicketActiityType = {
+export type PurchaseTicketActivityType = {
     userId: number;
     action: string;
     timestamp: Date;
