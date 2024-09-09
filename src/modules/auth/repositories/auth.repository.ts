@@ -5,7 +5,7 @@ import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserActivity } from 'src/modules/user/models/user-activity.model';
-import { LogInActivityType } from '../utils/types';
+import { LogInActivityType } from '../types/types';
 
 @Injectable()
 export class AuthRepository {

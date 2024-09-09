@@ -12,11 +12,11 @@ import { Cacheable } from 'src/modules/caching/decorators/cache.decorator';
 import { CacheInterceptor } from 'src/modules/caching/interceptors/cache.interceptor';
 
 @UseInterceptors(CacheInterceptor)
+@UseGuards(JwtUserGuard)
 @Controller('events')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @UseGuards(JwtUserGuard)
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createEvent(@Body() createEventDto: CreateEventDto, @Req() req: AuthRequest): Promise<EventResponseDto> {
@@ -28,7 +28,6 @@ export class EventController {
     return new EventResponseDto(event);
   }
 
-  @UseGuards(JwtUserGuard)
   @Get()
   @Cacheable('getUserEvents')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -61,7 +60,6 @@ export class EventController {
   }
 
   @Put('/:id')
-  @UseGuards(JwtUserGuard)
   async updateEvent(@Body() updateEventDto: UpdateEventDto, @Req() req, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
     try {
       const userId = req.user?.id;
@@ -76,7 +74,6 @@ export class EventController {
   }
 
   @Delete('/:id')
-  @UseGuards(JwtUserGuard)
   async deleteEvent(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
     try {
       const userId = req.user?.id;
@@ -92,28 +89,27 @@ export class EventController {
 
   @Get('admin/events')
   @Cacheable('getNonApprovedEvents')
-  @UseGuards(JwtUserGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   async getNonApprovedEvents(): Promise<EventResponseDto[]> {
     const events = await this.eventService.getNonApprovedEvents();
     return events.map(event => new EventResponseDto(event));
   }
 
   @Put('admin/events/:id/approve')
-  @UseGuards(JwtUserGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   async approveEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
     await this.eventService.approveEvent(id);
     return new ResponseDto(null, 'Event approved successfully');
   }
 
   @Put('admin/events/:id/reject')
-  @UseGuards(JwtUserGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   async rejectEvent(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto<void>> {
     await this.eventService.rejectEvent(id);
     return new ResponseDto(null, 'Event rejected successfully');
   }
 
   @Post(':eventId/check-in')
-  @UseGuards(JwtUserGuard)
   async checkInToEvent(@Param('eventId') eventId: number, @Req() req: AuthRequest): Promise<ResponseDto<void>> {
     try{
       const userId = req.user.id;

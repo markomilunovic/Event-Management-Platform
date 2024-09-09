@@ -4,7 +4,7 @@ import { Event } from '../models/event.model';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { Op } from 'sequelize';
 import { CreateEventDto } from '../dtos/create-event.dto';
-import { CheckInActivityType, UpdateEventType } from '../utils/types';
+import { CheckInActivityType, UpdateEventType } from '../types/types';
 import { User } from 'src/modules/user/models/user.model';
 import { Ticket } from 'src/modules/ticket/models/ticket.model';
 import { UserActivity } from 'src/modules/user/models/user-activity.model';
@@ -59,7 +59,7 @@ export class EventRepository {
 
     const tickets = await this.ticketModel.findAll({ where: { eventId: eventId } });
 
-    if (!tickets.length) {
+    if (!tickets?.length) {
       throw new Error('No tickets found for the given event');
     }
 
@@ -71,7 +71,7 @@ export class EventRepository {
     // Find all users associated with these userIds
     const users = await this.userModel.findAll({ where: { id: uniqueUserIds } });
 
-    if (!users.length) {
+    if (!users?.length) {
       throw new Error('No users found for the tickets');
     }
 
