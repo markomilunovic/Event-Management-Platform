@@ -18,7 +18,6 @@ export class EventController {
   constructor(private readonly eventService: EventService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createEvent(@Body() createEventDto: CreateEventDto, @Req() req: AuthRequest): Promise<EventResponseDto> {
     const userId = req.user?.id;
     if (!userId) {
@@ -30,7 +29,6 @@ export class EventController {
 
   @Get()
   @Cacheable('getUserEvents')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async getUserEvents(@Req() req: AuthRequest): Promise<EventResponseDto[]> {
     const userId = req.user?.id;
     if (!userId) {
@@ -42,7 +40,6 @@ export class EventController {
 
   @Get('search')
   @Cacheable('searchEvents')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async searchEvents(@Query() searchEventsDto: SearchEventsDto): Promise<EventResponseDto[]> {
     const events = await this.eventService.searchEvents(searchEventsDto);
     return events.map(event => new EventResponseDto(event));
