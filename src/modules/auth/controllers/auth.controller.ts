@@ -13,7 +13,6 @@ export class AuthController {
 
   @Post('register')
   @UseInterceptors(FileInterceptor('profilePicture', multerConfig))
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async register(
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() profilePicture: Express.Multer.File,
@@ -22,7 +21,6 @@ export class AuthController {
   }
   
   @Post('login')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async login(@Body() loginUserDto: LoginUserDto): Promise<LoginResponseDto> {
     return this.authService.login(loginUserDto);
   }
