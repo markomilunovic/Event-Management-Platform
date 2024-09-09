@@ -4,5 +4,4 @@ import { Event } from 'src/modules/event/models/event.model';
 
 export interface AuthRequest extends Request {
     user?: User | null;
-    event?: Event | null;
 }

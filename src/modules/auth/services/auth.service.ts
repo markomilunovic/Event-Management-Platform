@@ -11,7 +11,6 @@ import { UserResponseDto } from '../dtos/user-response.dto';
 import { AccessTokenPayload, RefreshTokenPayload } from '../interfaces/token-payloads.interface';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +20,13 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  /**
+   * Registers a new user.
+   * @param {CreateUserDto} createUserDto - The data transfer object containing user details.
+   * @param {string} profilePicture - The optional profile picture URL of the user.
+   * @returns  {Promise<UserResponseDto>} A promise that resolves to the registered user's response data.
+   * @throws {BadRequestException} If the user already exists.
+   */
   async register(createUserDto: CreateUserDto, profilePicture?: string): Promise<UserResponseDto> {
     const { email, password, role } = createUserDto;
 
@@ -37,6 +43,11 @@ export class AuthService {
     return new UserResponseDto(newUser);
   }
 
+  /**
+   * Generates an access token for the user.
+   * @param {AccessTokenPayload} payload - The payload to encode in the access token.
+   * @returns {string} The generated access token.
+   */
   generateAccessToken(payload: AccessTokenPayload): string {
     const expiresIn = `${this.configService.get('ACCESS_TOKEN_EXP_TIME_IN_DAYS')}d`;
     return this.jwtService.sign(payload, {
@@ -45,6 +56,11 @@ export class AuthService {
     });
   }
   
+  /**
+   * Generates a refresh token for the user.
+   * @param {RefreshTokenPayload} payload - The payload to encode in the refresh token.
+   * @returns {string} The generated refresh token.
+   */
   generateRefreshToken(payload: RefreshTokenPayload): string {
     const expiresIn = `${this.configService.get('REFRESH_TOKEN_EXP_TIME_IN_DAYS')}d`;
     return this.jwtService.sign(payload, {
@@ -53,14 +69,34 @@ export class AuthService {
     });
   }  
 
+  /**
+ * Saves a new access token for a specific user in the database.
+ * @param {number} userId - The ID of the user.
+ * @param {Date} expiresAt - The expiration date of the access token.
+ * @returns {Promise<AccessToken>} A promise that resolves to the saved access token.
+ */
   async saveAccessToken(userId: number, expiresAt: Date): Promise<AccessToken> {
     return await this.authRepository.createAccessToken(userId, expiresAt);
   }
 
+
+  /**
+ * Saves a new refresh token associated with a specific access token in the database.
+ * @param {string} accessTokenId - The ID of the associated access token.
+ * @param {Date} expiresAt - The expiration date of the refresh token.
+ * @returns {Promise<RefreshToken>} A promise that resolves to the saved refresh token.
+ */
   async saveRefreshToken(accessTokenId: string, expiresAt: Date): Promise<RefreshToken> {
     return await this.authRepository.createRefreshToken(accessTokenId, expiresAt);
   }
 
+  /**
+   * Handles user login.
+   * @param {LoginUserDto} loginUserDto - The data transfer object containing login details.
+   * @returns {Promise<LoginResponseDto>}  A promise that resolves to the response containing access and refresh tokens and user details.
+   * @throws {NotFoundException} If the user does not exist.
+   * @throws {UnauthorizedException} If the password is incorrect.
+   */
   async login(loginUserDto: LoginUserDto): Promise<LoginResponseDto> {
     const { email, password } = loginUserDto;
     const user = await this.authRepository.findUserByEmail(email);
@@ -108,7 +144,13 @@ export class AuthService {
     const userResponseDto = new UserResponseDto(user);
     return new LoginResponseDto(accessTokenString, refreshTokenString, userResponseDto);
   }
-
+  
+  /**
+   * Logs the user out.
+   * @param {number} userId - The ID of the user.
+   * @returns {Promise<void>} A promise that resolves when the user is logged out.
+   * @throws {NotFoundException} If no access token is found for the user.
+   */
   async logout(userId: number): Promise<void> {
     const accessToken = await this.authRepository.findAccessTokenByUserId(userId);
     if (!accessToken) {

@@ -5,13 +5,13 @@ import { AdminGuard } from 'src/modules/auth/guards/admin.guard';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { UserActivity } from 'src/modules/user/models/user-activity.model';
 
+@UseGuards(JwtUserGuard, AdminGuard)
 @Controller('analytics')
 export class AnalyticsController {
 
     constructor(private readonly analyticsService: AnalyticsService) {}
 
     @Get('event-attendance/:eventId')
-    @UseGuards(JwtUserGuard, AdminGuard)
     async getEventAttendance(@Param('eventId') eventId: number): Promise<ResponseDto<number>> {
         try{
             const eventAttendance = await this.analyticsService.getEventAttendance(eventId);
@@ -26,7 +26,6 @@ export class AnalyticsController {
     }
 
     @Get('tickets-sold/:eventId')
-    @UseGuards(JwtUserGuard, AdminGuard)
     async getTicketsSold(@Param('eventId') eventId: number): Promise<ResponseDto<number>> {
         try {
             const ticketsSold = await this.analyticsService.getTicketsSold(eventId);
@@ -41,7 +40,6 @@ export class AnalyticsController {
     }
 
     @Get('user-activity/:userId')
-    @UseGuards(JwtUserGuard, AdminGuard)
     async getUserActivity(@Param('userId') userId: number): Promise<ResponseDto<UserActivity[]>> {
         try {
             const activities = await this.analyticsService.getUserActivity(userId);
