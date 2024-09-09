@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
+import { UserActivity } from '@modules/user/models/user-activity.model';
 
-import { AnalyticsRepository } from '../repositories/analytics.repository'; 
+import { AnalyticsRepository } from '../repositories/analytics.repository';
 
 @Injectable()
 export class AnalyticsService {
