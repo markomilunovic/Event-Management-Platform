@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { Event } from 'src/modules/event/models/event.model';
+import { Event } from '@modules/event/models/event.model';
 
 @Injectable()
 export class AnalyticsRepository {

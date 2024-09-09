@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
+import { AuthRequest } from '@modules/event/interfaces/auth-request.interface';
 
 @Injectable()
 export class AdminGuard implements CanActivate {

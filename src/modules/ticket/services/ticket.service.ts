@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { EventRepository } from 'src/modules/event/repositories/event.repository';
+import { EventRepository } from '@modules/event/repositories/event.repository';
 
 import { QRCodeService } from './qrcode.service';
 import { Ticket } from '../models/ticket.model';

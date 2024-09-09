@@ -21,8 +21,8 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
-import { ResponseDto } from 'src/common/dto/response.dto';
-import { multerConfig } from 'src/config/multer.config';
+import { ResponseDto } from '@common/dto/response.dto';
+import { multerConfig } from 'config/multer.config';
 
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UserService } from './user.service';

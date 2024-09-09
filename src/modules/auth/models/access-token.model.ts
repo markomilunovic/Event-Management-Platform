@@ -1,3 +1,4 @@
+import { User } from '@modules/user/models/user.model';
 import {
   Column,
   DataType,
@@ -5,7 +6,6 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from 'src/modules/user/models/user.model';
 
 @Table({ tableName: 'access_token' })
 export class AccessToken extends Model<AccessToken> {

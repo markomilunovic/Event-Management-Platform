@@ -24,7 +24,7 @@ module.exports = {
     'migrations/*.js',
     'config/*.js',
     'models/*.js',
-  ], // Dodajte sve JS fajlove koje želite da izuzmete
+  ],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -51,7 +51,7 @@ module.exports = {
     'import/no-unresolved': [
       'error',
       {
-        ignore: ['^src/', '^@modules/'], // Adjusted to include @modules
+        ignore: ['^src/', '^@modules/'],
       },
     ],
   },

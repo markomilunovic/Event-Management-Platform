@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { User } from 'src/modules/user/models/user.model';
+import { User } from '@modules/user/models/user.model';
 
 export class UserResponseDto {
   @ApiProperty({ description: 'The unique identifier of the user', example: 1 })

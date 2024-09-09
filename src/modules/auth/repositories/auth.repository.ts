@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
-import { User } from 'src/modules/user/models/user.model';
+import { UserActivity } from '@modules/user/models/user-activity.model';
+import { User } from '@modules/user/models/user.model';
 
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccessToken } from '../models/access-token.model';

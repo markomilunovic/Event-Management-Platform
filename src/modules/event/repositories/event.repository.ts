@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { Ticket } from '@modules/ticket/models/ticket.model';
+import { UserActivity } from '@modules/user/models/user-activity.model';
+import { User } from '@modules/user/models/user.model';
 import { Op } from 'sequelize';
-import { Ticket } from 'src/modules/ticket/models/ticket.model';
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
-import { User } from 'src/modules/user/models/user.model';
 
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';

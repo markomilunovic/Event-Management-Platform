@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
+import { UserActivity } from '@modules/user/models/user-activity.model';
 
 import { Ticket } from '../models/ticket.model';
 import { PurchaseTicketActivityType } from '../types/types';

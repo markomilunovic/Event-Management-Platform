@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { NotificationGateway } from 'src/modules/notification/gateway/notification.gateway';
-import { NotificationService } from 'src/modules/notification/services/notification.service';
-import { TicketRepository } from 'src/modules/ticket/repositories/ticket.repository';
+import { NotificationGateway } from '@modules/notification/gateway/notification.gateway';
+import { NotificationService } from '@modules/notification/services/notification.service';
+import { TicketRepository } from '@modules/ticket/repositories/ticket.repository';
 
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';

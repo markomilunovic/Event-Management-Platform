@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { User } from 'src/modules/user/models/user.model';
+import { User } from '@modules/user/models/user.model';
 
 import { AuthController } from './controllers/auth.controller';
 import { AccessToken } from './models/access-token.model';

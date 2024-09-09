@@ -14,10 +14,10 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
-import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
-import { Cacheable } from 'src/modules/caching/decorators/cache.decorator';
-import { CacheInterceptor } from 'src/modules/caching/interceptors/cache.interceptor';
-import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
+import { JwtUserGuard } from '@modules/auth/guards/jwt-user.guard';
+import { Cacheable } from '@modules/caching/decorators/cache.decorator';
+import { CacheInterceptor } from '@modules/caching/interceptors/cache.interceptor';
+import { AuthRequest } from '@modules/event/interfaces/auth-request.interface';
 
 import { Notification } from '../models/notification.model';
 import { NotificationService } from '../services/notification.service';
