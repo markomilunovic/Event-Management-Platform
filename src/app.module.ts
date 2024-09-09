@@ -17,6 +17,8 @@ import { Notification } from './modules/notification/models/notification.model';
 import { CachingModule } from './modules/caching/caching.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { UserActivity } from './modules/user/models/user-activity.model';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -37,6 +39,18 @@ import { UserActivity } from './modules/user/models/user-activity.model';
         models: [User, AccessToken, RefreshToken, Event, Ticket, Notification, UserActivity],
       }),
       inject: [ConfigService],
+    }),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(({ timestamp, level, message }) => {
+              return `${timestamp} [${level}]: ${message}`;
+            }),
+          ),
+        }),
+      ],
     }),
     UserModule,
     AuthModule,
