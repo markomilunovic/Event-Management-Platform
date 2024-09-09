@@ -43,7 +43,6 @@ export class UserController {
 
     @Put('profile')
     @UseInterceptors(FileInterceptor('profilePicture', multerConfig))
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     @ApiOperation({ summary: 'Update user profile' })
     @ApiResponse({ status: 200, description: 'Profile updated successfully' })
     @ApiResponse({ status: 400, description: 'Bad request' })
