@@ -1,4 +1,3 @@
-import { User } from '@modules/user/models/user.model';
 import {
   Column,
   DataType,
@@ -6,6 +5,8 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+
+import { User } from '@modules/user/models/user.model';
 
 import { NotificationStatus } from '../enums/notification-status.enum';
 

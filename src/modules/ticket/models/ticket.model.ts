@@ -1,5 +1,3 @@
-import { Event } from '@modules/event/models/event.model';
-import { User } from '@modules/user/models/user.model';
 import {
   Column,
   DataType,
@@ -7,6 +5,9 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+
+import { Event } from '@modules/event/models/event.model';
+import { User } from '@modules/user/models/user.model';
 
 @Table({ tableName: 'ticket' })
 export class Ticket extends Model<Ticket> {
