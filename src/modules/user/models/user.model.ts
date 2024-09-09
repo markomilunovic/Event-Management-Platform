@@ -46,7 +46,7 @@ export class User extends Model<User> {
     type: DataType.BOOLEAN,
     allowNull: false,
     defaultValue: true,
-    field: 'is_active'
+    field: 'is_active',
   })
   isActive: boolean;
 

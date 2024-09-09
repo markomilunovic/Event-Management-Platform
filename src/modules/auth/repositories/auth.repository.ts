@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+
+import { UserActivity } from 'src/modules/user/models/user-activity.model';
 import { User } from 'src/modules/user/models/user.model';
+
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { UserActivity } from 'src/modules/user/models/user-activity.model';
 import { LogInActivityType } from '../types/types';
 
 @Injectable()
 export class AuthRepository {
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
-    @InjectModel(AccessToken) private readonly accessTokenModel: typeof AccessToken,
-    @InjectModel(RefreshToken) private readonly refreshTokenModel: typeof RefreshToken,
+    @InjectModel(AccessToken)
+    private readonly accessTokenModel: typeof AccessToken,
+    @InjectModel(RefreshToken)
+    private readonly refreshTokenModel: typeof RefreshToken,
   ) {}
 
   async findUserByEmail(email: string): Promise<User> {
@@ -23,20 +27,31 @@ export class AuthRepository {
     return this.userModel.findByPk(id);
   }
 
-  async createUser(createUserDto: CreateUserDto, profilePicture?: string): Promise<User> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    profilePicture?: string,
+  ): Promise<User> {
     return this.userModel.create({ ...createUserDto, profilePicture });
   }
 
-  async createAccessToken(userId: number, expiresAt: Date): Promise<AccessToken> {
+  async createAccessToken(
+    userId: number,
+    expiresAt: Date,
+  ): Promise<AccessToken> {
     return this.accessTokenModel.create({ userId, expiresAt });
   }
 
-  async createRefreshToken(accessTokenId: string, expiresAt: Date): Promise<RefreshToken> {
+  async createRefreshToken(
+    accessTokenId: string,
+    expiresAt: Date,
+  ): Promise<RefreshToken> {
     return this.refreshTokenModel.create({ accessTokenId, expiresAt });
   }
 
   async findAccessTokenByUserId(userId: number): Promise<AccessToken> {
-    return this.accessTokenModel.findOne({ where: { userId, isRevoked: false } });
+    return this.accessTokenModel.findOne({
+      where: { userId, isRevoked: false },
+    });
   }
 
   async revokeAccessToken(accessTokenId: string): Promise<void> {
@@ -46,7 +61,9 @@ export class AuthRepository {
     );
   }
 
-  async revokeRefreshTokenByAccessTokenId(accessTokenId: string): Promise<void> {
+  async revokeRefreshTokenByAccessTokenId(
+    accessTokenId: string,
+  ): Promise<void> {
     await this.refreshTokenModel.update(
       { isRevoked: true },
       { where: { accessTokenId } },
@@ -59,7 +76,7 @@ export class AuthRepository {
     await UserActivity.create({
       userId: userId,
       action: action,
-      timestamp: timestamp
+      timestamp: timestamp,
     });
   }
 }

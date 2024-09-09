@@ -1,16 +1,26 @@
-import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AuthRepository } from '../repositories/auth.repository';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { UserRole } from '../enums/user-role.enum';
-import { LoginUserDto } from '../dtos/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
+
+import * as bcrypt from 'bcrypt';
+
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { LoginResponseDto } from '../dtos/login-response.dto';
+import { LoginUserDto } from '../dtos/login-user.dto';
 import { UserResponseDto } from '../dtos/user-response.dto';
-import { AccessTokenPayload, RefreshTokenPayload } from '../interfaces/token-payloads.interface';
+import { UserRole } from '../enums/user-role.enum';
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from '../interfaces/token-payloads.interface';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
+import { AuthRepository } from '../repositories/auth.repository';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +37,10 @@ export class AuthService {
    * @returns  {Promise<UserResponseDto>} A promise that resolves to the registered user's response data.
    * @throws {BadRequestException} If the user already exists.
    */
-  async register(createUserDto: CreateUserDto, profilePicture?: string): Promise<UserResponseDto> {
+  async register(
+    createUserDto: CreateUserDto,
+    profilePicture?: string,
+  ): Promise<UserResponseDto> {
     const { email, password, role } = createUserDto;
 
     const existingUser = await this.authRepository.findUserByEmail(email);
@@ -37,8 +50,12 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await this.authRepository.createUser(
-      { ...createUserDto, password: hashedPassword, role: role || UserRole.USER }, 
-      profilePicture
+      {
+        ...createUserDto,
+        password: hashedPassword,
+        role: role || UserRole.USER,
+      },
+      profilePicture,
     );
     return new UserResponseDto(newUser);
   }
@@ -55,7 +72,7 @@ export class AuthService {
       expiresIn,
     });
   }
-  
+
   /**
    * Generates a refresh token for the user.
    * @param {RefreshTokenPayload} payload - The payload to encode in the refresh token.
@@ -67,27 +84,32 @@ export class AuthService {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn,
     });
-  }  
+  }
 
   /**
- * Saves a new access token for a specific user in the database.
- * @param {number} userId - The ID of the user.
- * @param {Date} expiresAt - The expiration date of the access token.
- * @returns {Promise<AccessToken>} A promise that resolves to the saved access token.
- */
+   * Saves a new access token for a specific user in the database.
+   * @param {number} userId - The ID of the user.
+   * @param {Date} expiresAt - The expiration date of the access token.
+   * @returns {Promise<AccessToken>} A promise that resolves to the saved access token.
+   */
   async saveAccessToken(userId: number, expiresAt: Date): Promise<AccessToken> {
     return await this.authRepository.createAccessToken(userId, expiresAt);
   }
 
-
   /**
- * Saves a new refresh token associated with a specific access token in the database.
- * @param {string} accessTokenId - The ID of the associated access token.
- * @param {Date} expiresAt - The expiration date of the refresh token.
- * @returns {Promise<RefreshToken>} A promise that resolves to the saved refresh token.
- */
-  async saveRefreshToken(accessTokenId: string, expiresAt: Date): Promise<RefreshToken> {
-    return await this.authRepository.createRefreshToken(accessTokenId, expiresAt);
+   * Saves a new refresh token associated with a specific access token in the database.
+   * @param {string} accessTokenId - The ID of the associated access token.
+   * @param {Date} expiresAt - The expiration date of the refresh token.
+   * @returns {Promise<RefreshToken>} A promise that resolves to the saved refresh token.
+   */
+  async saveRefreshToken(
+    accessTokenId: string,
+    expiresAt: Date,
+  ): Promise<RefreshToken> {
+    return await this.authRepository.createRefreshToken(
+      accessTokenId,
+      expiresAt,
+    );
   }
 
   /**
@@ -111,13 +133,25 @@ export class AuthService {
     }
 
     const accessTokenExpiresAt = new Date();
-    accessTokenExpiresAt.setDate(accessTokenExpiresAt.getDate() + this.configService.get<number>('ACCESS_TOKEN_EXP_TIME_IN_DAYS'));
+    accessTokenExpiresAt.setDate(
+      accessTokenExpiresAt.getDate() +
+        this.configService.get<number>('ACCESS_TOKEN_EXP_TIME_IN_DAYS'),
+    );
 
     const refreshTokenExpiresAt = new Date();
-    refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + this.configService.get<number>('REFRESH_TOKEN_EXP_TIME_IN_DAYS'));
+    refreshTokenExpiresAt.setDate(
+      refreshTokenExpiresAt.getDate() +
+        this.configService.get<number>('REFRESH_TOKEN_EXP_TIME_IN_DAYS'),
+    );
 
-    const accessToken = await this.saveAccessToken(user.id, accessTokenExpiresAt);
-    const refreshToken = await this.saveRefreshToken(accessToken.id, refreshTokenExpiresAt);
+    const accessToken = await this.saveAccessToken(
+      user.id,
+      accessTokenExpiresAt,
+    );
+    const refreshToken = await this.saveRefreshToken(
+      accessToken.id,
+      refreshTokenExpiresAt,
+    );
 
     const accessTokenPayload: AccessTokenPayload = {
       jti: accessToken.id,
@@ -137,14 +171,17 @@ export class AuthService {
       action: 'login',
       timestamp: new Date(),
     };
-    
+
     await this.authRepository.createLogInActivity(userActivity);
-    
 
     const userResponseDto = new UserResponseDto(user);
-    return new LoginResponseDto(accessTokenString, refreshTokenString, userResponseDto);
+    return new LoginResponseDto(
+      accessTokenString,
+      refreshTokenString,
+      userResponseDto,
+    );
   }
-  
+
   /**
    * Logs the user out.
    * @param {number} userId - The ID of the user.
@@ -152,7 +189,8 @@ export class AuthService {
    * @throws {NotFoundException} If no access token is found for the user.
    */
   async logout(userId: number): Promise<void> {
-    const accessToken = await this.authRepository.findAccessTokenByUserId(userId);
+    const accessToken =
+      await this.authRepository.findAccessTokenByUserId(userId);
     if (!accessToken) {
       throw new NotFoundException('Access token not found for user');
     }

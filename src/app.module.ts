@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { User } from './modules/user/models/user.model';
-import { AccessToken } from './modules/auth/models/access-token.model';
-import { RefreshToken } from './modules/auth/models/refresh-token.model';
-import { Event } from './modules/event/models/event.model';
-import { EventModule } from './modules/event/event.module';
-import { TicketModule } from './modules/ticket/ticket.module';
-import { Ticket } from './modules/ticket/models/ticket.model';
-import { NotificationModule } from './modules/notification/notification.module';
-import { Notification } from './modules/notification/models/notification.model';
-import { CachingModule } from './modules/caching/caching.module';
-import { AnalyticsModule } from './modules/analytics/analytics.module';
-import { UserActivity } from './modules/user/models/user-activity.model';
+
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AccessToken } from './modules/auth/models/access-token.model';
+import { RefreshToken } from './modules/auth/models/refresh-token.model';
+import { CachingModule } from './modules/caching/caching.module';
+import { EventModule } from './modules/event/event.module';
+import { Event } from './modules/event/models/event.model';
+import { Notification } from './modules/notification/models/notification.model';
+import { NotificationModule } from './modules/notification/notification.module';
+import { Ticket } from './modules/ticket/models/ticket.model';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { UserActivity } from './modules/user/models/user-activity.model';
+import { User } from './modules/user/models/user.model';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -36,7 +38,15 @@ import * as winston from 'winston';
         database: configService.get<string>('DB_NAME'),
         autoLoadModels: true,
         synchronize: true,
-        models: [User, AccessToken, RefreshToken, Event, Ticket, Notification, UserActivity],
+        models: [
+          User,
+          AccessToken,
+          RefreshToken,
+          Event,
+          Ticket,
+          Notification,
+          UserActivity,
+        ],
       }),
       inject: [ConfigService],
     }),
@@ -58,7 +68,7 @@ import * as winston from 'winston';
     TicketModule,
     NotificationModule,
     CachingModule,
-    AnalyticsModule
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

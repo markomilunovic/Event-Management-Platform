@@ -1,5 +1,12 @@
-import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { User } from 'src/modules/user/models/user.model';
+
 import { NotificationStatus } from '../enums/notification-status.enum';
 
 @Table({ tableName: 'notification' })
@@ -7,7 +14,7 @@ export class Notification extends Model<Notification> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   })
   id: number;
 
@@ -15,21 +22,21 @@ export class Notification extends Model<Notification> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    field: 'user_id'
+    field: 'user_id',
   })
   userId: number;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    field: 'message'
+    field: 'message',
   })
   message: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(NotificationStatus)),
     allowNull: false,
-    field: 'status'
+    field: 'status',
   })
   status: NotificationStatus;
 
@@ -40,7 +47,7 @@ export class Notification extends Model<Notification> {
     field: 'created_at',
   })
   createdAt: Date;
-  
+
   @Column({
     type: DataType.DATE,
     allowNull: false,

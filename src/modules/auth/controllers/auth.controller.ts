@@ -1,11 +1,22 @@
-import { Body, Controller, Patch, Post, UploadedFile, UseInterceptors, UsePipes, ValidationPipe, Param, ParseIntPipe } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
-import { CreateUserDto } from '../dtos/create-user.dto'; 
-import { LoginUserDto } from '../dtos/login-user.dto'; 
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 import { multerConfig } from 'src/config/multer.config';
-import { UserResponseDto } from '../dtos/user-response.dto'; 
-import { LoginResponseDto } from '../dtos/login-response.dto'; 
+
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { LoginResponseDto } from '../dtos/login-response.dto';
+import { LoginUserDto } from '../dtos/login-user.dto';
+import { UserResponseDto } from '../dtos/user-response.dto';
+import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +30,7 @@ export class AuthController {
   ): Promise<UserResponseDto> {
     return this.authService.register(createUserDto, profilePicture?.filename);
   }
-  
+
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto): Promise<LoginResponseDto> {
     return this.authService.login(loginUserDto);

@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthRepository } from '../repositories/auth.repository';
+import { PassportStrategy } from '@nestjs/passport';
+
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { User } from 'src/modules/user/models/user.model';
+
 import { JwtPayload } from '../interfaces/token-payloads.interface';
-import { User } from 'src/modules/user/models/user.model'; 
+import { AuthRepository } from '../repositories/auth.repository';
 
 @Injectable()
 export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt-user') {

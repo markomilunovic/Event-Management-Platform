@@ -1,4 +1,11 @@
-import { Column, DataType, Model, Table, ForeignKey } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  Model,
+  Table,
+  ForeignKey,
+} from 'sequelize-typescript';
+
 import { User } from '../../user/models/user.model';
 
 @Table({ tableName: 'event' })
@@ -65,7 +72,7 @@ export class Event extends Model<Event> {
   @Column({
     type: DataType.INTEGER,
     defaultValue: 0,
-    field: 'attendance_count'
+    field: 'attendance_count',
   })
   attendanceCount: number;
 

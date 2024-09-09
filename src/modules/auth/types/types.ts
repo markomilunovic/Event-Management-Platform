@@ -1,5 +1,5 @@
 export type LogInActivityType = {
-    userId: number;
-    action: string;
-    timestamp: Date;
-}
+  userId: number;
+  action: string;
+  timestamp: Date;
+};

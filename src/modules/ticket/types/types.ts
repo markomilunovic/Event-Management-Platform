@@ -1,10 +1,10 @@
 export type PurchaseTicketType = {
-    eventId: number;
-}
+  eventId: number;
+};
 
 export type PurchaseTicketActivityType = {
-    userId: number;
-    action: string;
-    timestamp: Date;
-    metadata: object;
-}
+  userId: number;
+  action: string;
+  timestamp: Date;
+  metadata: object;
+};
