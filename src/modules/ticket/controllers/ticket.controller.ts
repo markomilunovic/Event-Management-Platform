@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Post, Req, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { TicketService } from '../services/ticket.service';
 import { JwtUserGuard } from 'src/modules/auth/guards/jwt-user.guard';
 import { AuthRequest } from 'src/modules/event/interfaces/auth-request.interface';
@@ -7,16 +7,21 @@ import { TicketResponseDto } from '../dtos/ticket-response.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { Cacheable } from 'src/modules/caching/decorators/cache.decorator';
 import { CacheInterceptor } from 'src/modules/caching/interceptors/cache.interceptor';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Tickets')
+@UseGuards(JwtUserGuard)
+@ApiBearerAuth()
 @UseInterceptors(CacheInterceptor)
 @Controller('tickets')
 export class TicketController {
 
-    constructor(private ticketService: TicketService) {}
+    constructor(private readonly ticketService: TicketService) {}
 
     @Post()
-    @UseGuards(JwtUserGuard)
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ApiOperation({ summary: 'Purchase a ticket' })
+    @ApiResponse({ status: 201, description: 'Ticket purchased successfully.' })
+    @ApiResponse({ status: 500, description: 'Ticket purchase failed.' })
     async purchaseTicket(@Req() req: AuthRequest, @Body() purchaseTicketDto: PurchaseTicketDto): Promise<ResponseDto<TicketResponseDto>> {
         try {
             const userId = req.user?.id;
@@ -33,7 +38,9 @@ export class TicketController {
 
     @Get()
     @Cacheable('getTickets')
-    @UseGuards(JwtUserGuard)
+    @ApiOperation({ summary: 'Get all tickets for the authenticated user' })
+    @ApiResponse({ status: 200, description: 'Tickets retrieved successfully.' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve tickets.' })
     async getTickets(@Req() req: AuthRequest): Promise<ResponseDto<TicketResponseDto[]>> {
         try {
             const userId = req.user?.id;
@@ -47,7 +54,9 @@ export class TicketController {
 
     @Get(':id')
     @Cacheable('getTicketById')
-    @UseGuards(JwtUserGuard)
+    @ApiOperation({ summary: 'Get a ticket by ID' })
+    @ApiResponse({ status: 200, description: 'Ticket retrieved successfully.' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve the ticket.' })
     async getTicketById(@Req() req: AuthRequest, @Param('id', ParseIntPipe) id: number): Promise<ResponseDto<TicketResponseDto>> {
         try {
             const userId = req.user?.id;
