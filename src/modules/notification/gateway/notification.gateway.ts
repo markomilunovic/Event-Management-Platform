@@ -7,9 +7,10 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 
-import { JwtPayload } from '@modules/auth/interfaces/token-payloads.interface';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Server, Socket } from 'socket.io';
+
+import { JwtPayload } from '@modules/auth/interfaces/token-payloads.interface';
 
 @WebSocketGateway()
 export class NotificationGateway

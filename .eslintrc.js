@@ -13,6 +13,13 @@ module.exports = {
     'plugin:import/warnings',
     'plugin:import/typescript',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
+    },
+  },
   root: true,
   env: {
     node: true,
@@ -30,6 +37,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'import/no-named-as-default': 'off',
     'prettier/prettier': 'error',
     'import/order': [
       'error',

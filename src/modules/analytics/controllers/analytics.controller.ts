@@ -8,11 +8,12 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { INTEGER } from 'sequelize';
+
 import { ResponseDto } from '@common/dto/response.dto';
 import { AdminGuard } from '@modules/auth/guards/admin.guard';
 import { JwtUserGuard } from '@modules/auth/guards/jwt-user.guard';
 import { UserActivity } from '@modules/user/models/user-activity.model';
-import { INTEGER } from 'sequelize';
 
 import { AnalyticsService } from '../services/analytics.service';
 
