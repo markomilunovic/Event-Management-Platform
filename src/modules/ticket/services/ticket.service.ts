@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+
+import { v4 as uuidv4 } from 'uuid';
 
 import { EventRepository } from '@modules/event/repositories/event.repository';
 
@@ -9,6 +16,8 @@ import { PurchaseTicketType } from '../types/types';
 
 @Injectable()
 export class TicketService {
+  private readonly logger = new Logger(TicketService.name);
+
   constructor(
     private readonly ticketRepository: TicketRepository,
     private readonly qrCodeService: QRCodeService,
@@ -16,65 +25,110 @@ export class TicketService {
   ) {}
 
   /**
-   * Purchases a ticket for a given event and generates a QR code for it.
-   * @param {number} userId - The ID of the user purchasing the ticket.
-   * @param {PurchaseTicketType} purchaseTicketType - The ticket purchase details.
-   * @returns {Promise<Ticket>} The purchased ticket.
-   * @throws {NotFoundException} If the event is not found.
+   * Purchases a ticket for the specified event and user.
+   *
+   * @param {number} userId - ID of the user purchasing the ticket.
+   * @param {PurchaseTicketType} purchaseTicketType - The type of ticket being purchased.
+   * @returns {Promise<Ticket>} - The purchased ticket.
+   * @throws {NotFoundException} - If the event is not found.
+   * @throws {InternalServerErrorException} - If ticket purchase fails.
    */
   async purchaseTicket(
     userId: number,
     purchaseTicketType: PurchaseTicketType,
   ): Promise<Ticket> {
-    const { eventId } = purchaseTicketType;
-    const qrCodeData = `Event-${eventId}-User-${userId}`;
-    const qrCodeFilePath =
-      await this.qrCodeService.generateQRCodeAndSaveFile(qrCodeData);
+    const traceId = uuidv4();
 
-    const purchaseTicketActivity = {
-      userId,
-      action: 'purchase_ticket',
-      timestamp: new Date(),
-      metadata: { eventId },
-    };
+    try {
+      const { eventId } = purchaseTicketType;
+      const qrCodeData = `Event-${eventId}-User-${userId}`;
+      const qrCodeFilePath =
+        await this.qrCodeService.generateQRCodeAndSaveFile(qrCodeData);
 
-    await this.ticketRepository.createPurchaseTicketActivity(
-      purchaseTicketActivity,
-    );
+      const purchaseTicketActivity = {
+        userId,
+        action: 'purchase_ticket',
+        timestamp: new Date(),
+        metadata: { eventId },
+      };
 
-    const ticket = await this.ticketRepository.purchaseTicket(
-      userId,
-      eventId,
-      qrCodeFilePath,
-    );
+      await this.ticketRepository.createPurchaseTicketActivity(
+        purchaseTicketActivity,
+      );
 
-    const event = await this.eventRepository.getEvent(eventId);
-    if (!event) {
-      throw new NotFoundException('Event Not Found');
+      const ticket = await this.ticketRepository.purchaseTicket(
+        userId,
+        eventId,
+        qrCodeFilePath,
+      );
+
+      const event = await this.eventRepository.getEvent(eventId);
+      if (!event) {
+        throw new NotFoundException('Event Not Found');
+      }
+
+      event.ticketsSold += 1;
+      await this.eventRepository.save(event);
+
+      return ticket;
+    } catch (error) {
+      this.logger.error(
+        `TraceId: ${traceId} - Error purchasing ticket: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException({
+        message: 'Ticket purchase failed. Please retry.',
+        traceId,
+      });
     }
-
-    event.ticketsSold += 1;
-    await this.eventRepository.save(event);
-
-    return ticket;
   }
 
   /**
-   * Retrieves all tickets for a given user.
-   * @param {number} userId - The ID of the user.
-   * @returns {Promise<Ticket[]>} A list of tickets for the user.
+   * Retrieves all tickets for a specific user.
+   *
+   * @param {number} userId - ID of the user whose tickets are being retrieved.
+   * @returns {Promise<Ticket[]>} - List of tickets for the user.
+   * @throws {InternalServerErrorException} - If ticket retrieval fails.
    */
   async getTicketsByUserId(userId: number): Promise<Ticket[]> {
-    return this.ticketRepository.findAllTicketsByUserId(userId);
+    const traceId = uuidv4();
+
+    try {
+      return this.ticketRepository.findAllTicketsByUserId(userId);
+    } catch (error) {
+      this.logger.error(
+        `TraceId: ${traceId} - Error retrieving tickets: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException({
+        message: 'Failed to retrieve tickets. Please retry.',
+        traceId,
+      });
+    }
   }
 
   /**
-   * Retrieves a specific ticket by its ID and the user's ID.
-   * @param {number} userId - The ID of the user.
-   * @param {number} ticketId - The ID of the ticket.
-   * @returns {Promise<Ticket>} The ticket details.
+   * Retrieves a specific ticket by its ID for a specific user.
+   *
+   * @param {number} userId - ID of the user who owns the ticket.
+   * @param {number} ticketId - ID of the ticket being retrieved.
+   * @returns {Promise<Ticket>} - The requested ticket.
+   * @throws {InternalServerErrorException} - If ticket retrieval fails.
    */
   async getTicketById(userId: number, ticketId: number): Promise<Ticket> {
-    return this.ticketRepository.findTicketById(userId, ticketId);
+    const traceId = uuidv4();
+
+    try {
+      return this.ticketRepository.findTicketById(userId, ticketId);
+    } catch (error) {
+      this.logger.error(
+        `TraceId: ${traceId} - Error retrieving ticket by ID: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException({
+        message: 'Failed to retrieve the ticket. Please retry.',
+        traceId,
+      });
+    }
   }
 }

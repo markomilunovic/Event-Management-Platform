@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -55,13 +53,7 @@ export class TicketController {
         'Ticket purchased successfully.',
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      } else {
-        throw new InternalServerErrorException(
-          'Ticket purchase failed. Please retry.',
-        );
-      }
+      throw error;
     }
   }
 
@@ -79,9 +71,7 @@ export class TicketController {
       const ticketDtos = tickets.map((ticket) => new TicketResponseDto(ticket));
       return new ResponseDto(ticketDtos, 'Tickets retrieved successfully.');
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve tickets. Please retry.',
-      );
+      throw error;
     }
   }
 
@@ -102,9 +92,7 @@ export class TicketController {
         'Ticket retrieved successfully.',
       );
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve the ticket. Please retry.',
-      );
+      throw error;
     }
   }
 }
