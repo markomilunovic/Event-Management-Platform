@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Post,
@@ -25,6 +26,7 @@ import { AuthRequest } from '@modules/event/interfaces/auth-request.interface';
 import { PurchaseTicketDto } from '../dtos/purchase-ticket.dto';
 import { TicketResponseDto } from '../dtos/ticket-response.dto';
 import { TicketService } from '../services/ticket.service';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @ApiTags('Tickets')
 @UseGuards(JwtUserGuard)
@@ -32,7 +34,9 @@ import { TicketService } from '../services/ticket.service';
 @UseInterceptors(CacheInterceptor)
 @Controller('tickets')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(private readonly ticketService: TicketService,
+              private readonly loggerService: LoggerService
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Purchase a ticket' })
@@ -53,7 +57,8 @@ export class TicketController {
         'Ticket purchased successfully.',
       );
     } catch (error) {
-      throw error;
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error purchasing ticket');
     }
   }
 
@@ -71,7 +76,8 @@ export class TicketController {
       const ticketDtos = tickets.map((ticket) => new TicketResponseDto(ticket));
       return new ResponseDto(ticketDtos, 'Tickets retrieved successfully.');
     } catch (error) {
-      throw error;
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error retrieving tickets');
     }
   }
 
@@ -92,7 +98,8 @@ export class TicketController {
         'Ticket retrieved successfully.',
       );
     } catch (error) {
-      throw error;
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error retrieving ticket');
     }
   }
 }

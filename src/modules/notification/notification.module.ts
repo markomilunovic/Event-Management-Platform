@@ -9,9 +9,11 @@ import { Notification } from './models/notification.model';
 import { NotificationRepository } from './repositories/notification.repository';
 import { NotificationService } from './services/notification.service';
 import { User } from '../user/models/user.model';
+import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
   imports: [
+    LoggerModule,
     ConfigModule.forRoot(),
     SequelizeModule.forFeature([Notification, User]),
     JwtModule.registerAsync({
