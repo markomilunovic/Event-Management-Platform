@@ -11,9 +11,11 @@ import { EventModule } from '../event/event.module';
 import { Event } from '../event/models/event.model';
 import { UserActivity } from '../user/models/user-activity.model';
 import { User } from '../user/models/user.model';
+import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
   imports: [
+    LoggerModule,
     ConfigModule,
     SequelizeModule.forFeature([Ticket, Event, User, UserActivity]),
     forwardRef(() => EventModule),

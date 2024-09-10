@@ -25,6 +25,7 @@ import { AuthRequest } from '@modules/event/interfaces/auth-request.interface';
 
 import { Notification } from '../models/notification.model';
 import { NotificationService } from '../services/notification.service';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @ApiTags('notification')
 @UseInterceptors(CacheInterceptor)
@@ -34,7 +35,9 @@ import { NotificationService } from '../services/notification.service';
 export class NotificationController {
   private readonly logger = new Logger(NotificationController.name);
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService,
+              private readonly loggerService: LoggerService
+  ) {}
 
   @Get()
   @Cacheable('getNotifications')
@@ -45,19 +48,12 @@ export class NotificationController {
     type: [Notification],
   })
   async getNotifications(@Req() req: AuthRequest): Promise<Notification[]> {
-    const traceId = uuidv4();
     const userId = req.user.id;
     try {
       return await this.notificationService.getNotificationsByUser(userId);
     } catch (error) {
-      this.logger.error(
-        `TraceId: ${traceId} - Error fetching notifications for user ${userId}: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException({
-        message: 'Error fetching notifications',
-        traceId,
-      });
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error fetching notifications');
     }
   }
 
@@ -72,7 +68,6 @@ export class NotificationController {
     @Req() req: AuthRequest,
     @Body('notificationId') notificationId: number,
   ): Promise<Notification> {
-    const traceId = uuidv4();
     const userId = req.user.id;
     try {
       return await this.notificationService.markNotificationAsRead(
@@ -80,14 +75,8 @@ export class NotificationController {
         notificationId,
       );
     } catch (error) {
-      this.logger.error(
-        `TraceId: ${traceId} - Error marking notification ${notificationId} as read for user ${userId}: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException({
-        message: 'Error marking notification as read',
-        traceId,
-      });
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error marking notification as read');
     }
   }
 }
