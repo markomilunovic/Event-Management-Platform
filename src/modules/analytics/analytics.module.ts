@@ -6,9 +6,13 @@ import { AnalyticsRepository } from './repositories/analytics.repository';
 import { AnalyticsService } from './services/analytics.service';
 import { Event } from '../event/models/event.model';
 import { UserActivity } from '../user/models/user-activity.model';
+import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Event, UserActivity])],
+  imports: [
+    SequelizeModule.forFeature([Event, UserActivity]),
+    LoggerModule
+],
   controllers: [AnalyticsController],
   providers: [AnalyticsService, AnalyticsRepository],
 })

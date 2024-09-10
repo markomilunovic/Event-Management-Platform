@@ -36,13 +36,16 @@ import { SearchEventsDto } from '../dtos/search-events.dto';
 import { UpdateEventDto } from '../dtos/update-event.dto';
 import { AuthRequest } from '../interfaces/auth-request.interface';
 import { EventService } from '../services/event.service';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @ApiTags('events')
 @UseInterceptors(CacheInterceptor)
 @UseGuards(JwtUserGuard)
 @Controller('events')
 export class EventController {
-  constructor(private readonly eventService: EventService) {}
+  constructor(private readonly eventService: EventService,
+              private readonly loggerService: LoggerService
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new event' })
@@ -57,12 +60,17 @@ export class EventController {
     @Body() createEventDto: CreateEventDto,
     @Req() req: AuthRequest,
   ): Promise<EventResponseDto> {
-    const userId = req.user?.id;
+    try {
+      const userId = req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
     const event = await this.eventService.createEvent(createEventDto, userId);
     return new EventResponseDto(event);
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error creating event');
+    }
   }
 
   @Get()
@@ -75,12 +83,17 @@ export class EventController {
   @ApiResponse({ status: 401, description: 'User not authenticated' })
   @Cacheable('getUserEvents')
   async getUserEvents(@Req() req: AuthRequest): Promise<EventResponseDto[]> {
-    const userId = req.user?.id;
+    try {
+      const userId = req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
     const events = await this.eventService.getUserEvents(userId);
     return events.map((event) => new EventResponseDto(event));
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error retrieving events');
+    }
   }
 
   @Get('search')
@@ -99,8 +112,13 @@ export class EventController {
   async searchEvents(
     @Query() searchEventsDto: SearchEventsDto,
   ): Promise<EventResponseDto[]> {
-    const events = await this.eventService.searchEvents(searchEventsDto);
-    return events.map((event) => new EventResponseDto(event));
+    try {
+      const events = await this.eventService.searchEvents(searchEventsDto);
+      return events.map((event) => new EventResponseDto(event));
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error retrieving events');
+    }
   }
 
   @Get('/:id')
@@ -123,6 +141,7 @@ export class EventController {
         'Event retrieved successfully',
       );
     } catch (error) {
+      this.loggerService.logError(error.message);
       throw new InternalServerErrorException('Error retrieving event');
     }
   }
@@ -155,9 +174,7 @@ export class EventController {
       await this.eventService.updateEvent(id, userId, updateEventDto);
       return new ResponseDto(null, 'Event updated successfully');
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
+      this.loggerService.logError(error.message);
       throw new InternalServerErrorException('Error updating event');
     }
   }
@@ -188,9 +205,7 @@ export class EventController {
       await this.eventService.deleteEvent(id, userId);
       return new ResponseDto(null, 'Event deleted successfully');
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
+      this.loggerService.logError(error.message);
       throw new InternalServerErrorException('Error deleting event');
     }
   }
@@ -205,8 +220,13 @@ export class EventController {
   @UseGuards(AdminGuard)
   @Cacheable('getNonApprovedEvents')
   async getNonApprovedEvents(): Promise<EventResponseDto[]> {
-    const events = await this.eventService.getNonApprovedEvents();
-    return events.map((event) => new EventResponseDto(event));
+    try {
+      const events = await this.eventService.getNonApprovedEvents();
+      return events.map((event) => new EventResponseDto(event));
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error retrieving non-approved events');
+    }
   }
 
   @Put('admin/events/:id/approve')
@@ -225,8 +245,13 @@ export class EventController {
   async approveEvent(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ResponseDto<void>> {
-    await this.eventService.approveEvent(id);
-    return new ResponseDto(null, 'Event approved successfully');
+    try {
+      await this.eventService.approveEvent(id);
+      return new ResponseDto(null, 'Event approved successfully');
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error approving event');
+    }
   }
 
   @Put('admin/events/:id/reject')
@@ -245,8 +270,13 @@ export class EventController {
   async rejectEvent(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ResponseDto<void>> {
-    await this.eventService.rejectEvent(id);
-    return new ResponseDto(null, 'Event rejected successfully');
+    try {
+      await this.eventService.rejectEvent(id);
+      return new ResponseDto(null, 'Event rejected successfully');
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error rejecting event');
+    }
   }
 
   @Post(':eventId/check-in')
@@ -276,16 +306,10 @@ export class EventController {
       await this.eventService.checkInToEvent(eventId, userId);
       return new ResponseDto(null, 'Check-in to event successful');
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof UnauthorizedException
-      ) {
-        throw error;
-      } else {
-        throw new InternalServerErrorException(
-          'Error checking in to the event',
-        );
-      }
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException(
+        'Error checking in to the event',
+      );
     }
   }
 }

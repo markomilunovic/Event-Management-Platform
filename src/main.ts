@@ -2,8 +2,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-import { HttpExceptionFilter } from 'filters/http-exception.filter';
-
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -19,7 +17,6 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Event Management API')
