@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   Param,
   ParseIntPipe,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -24,11 +25,14 @@ import { LoginResponseDto } from '../dtos/login-response.dto';
 import { LoginUserDto } from '../dtos/login-user.dto';
 import { UserResponseDto } from '../dtos/user-response.dto';
 import { AuthService } from '../services/auth.service';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,
+              private readonly loggerService: LoggerService
+  ) {}
 
   @Post('register')
   @UseInterceptors(FileInterceptor('profilePicture', multerConfig))
@@ -44,7 +48,12 @@ export class AuthController {
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() profilePicture: Express.Multer.File,
   ): Promise<UserResponseDto> {
-    return this.authService.register(createUserDto, profilePicture?.filename);
+    try {
+      return this.authService.register(createUserDto, profilePicture?.filename);
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error registering user');
+    }
   }
 
   @Post('login')
@@ -60,7 +69,12 @@ export class AuthController {
     description: 'Unauthorized - invalid credentials',
   })
   async login(@Body() loginUserDto: LoginUserDto): Promise<LoginResponseDto> {
-    return this.authService.login(loginUserDto);
+    try {
+      return this.authService.login(loginUserDto);
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('User login error')
+    }
   }
 
   @Patch('logout/:userId')
@@ -69,6 +83,11 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User successfully logged out' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async logout(@Param('userId', ParseIntPipe) userId: number): Promise<void> {
-    return this.authService.logout(userId);
+    try {
+      return this.authService.logout(userId);
+    } catch (error) {
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('User logout error');
+    }
   }
 }

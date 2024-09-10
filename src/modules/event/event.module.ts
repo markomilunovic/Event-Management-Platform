@@ -12,6 +12,7 @@ import { Ticket } from '../ticket/models/ticket.model';
 import { TicketModule } from '../ticket/ticket.module';
 import { UserActivity } from '../user/models/user-activity.model';
 import { User } from '../user/models/user.model';
+import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { User } from '../user/models/user.model';
     ]),
     NotificationModule,
     TicketModule,
+    LoggerModule
   ],
   controllers: [EventController],
   providers: [EventService, EventRepository],

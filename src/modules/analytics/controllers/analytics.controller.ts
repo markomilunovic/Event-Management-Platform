@@ -16,12 +16,15 @@ import { JwtUserGuard } from '@modules/auth/guards/jwt-user.guard';
 import { UserActivity } from '@modules/user/models/user-activity.model';
 
 import { AnalyticsService } from '../services/analytics.service';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @ApiTags('analytics')
 @UseGuards(JwtUserGuard, AdminGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(private readonly analyticsService: AnalyticsService,
+              private readonly loggerService: LoggerService
+  ) {}
 
   @Get('event-attendance/:eventId')
   @ApiOperation({ summary: 'Get attendance for a specific event' })
@@ -47,13 +50,10 @@ export class AnalyticsController {
         `The attendance for the event is ${eventAttendance}.`,
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      } else {
+        this.loggerService.logError(error.message);
         throw new InternalServerErrorException(
           'Error retrieving event attendance',
         );
-      }
     }
   }
 
@@ -80,13 +80,10 @@ export class AnalyticsController {
         `Tickets sold for the event: ${ticketsSold}.`,
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      } else {
+        this.loggerService.logError(error.message);
         throw new InternalServerErrorException(
           'Error retrieving tickets sold data',
         );
-      }
     }
   }
 
@@ -110,13 +107,10 @@ export class AnalyticsController {
         `Activities for user ${userId} retrieved successfully.`,
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      } else {
+        this.loggerService.logError(error.message);
         throw new InternalServerErrorException(
           'Error retrieving user activities',
         );
-      }
     }
   }
 }

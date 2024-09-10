@@ -13,9 +13,11 @@ import { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './services/auth.service';
 import { JwtUserStrategy } from './strategies/jwt-user.strategy';
 import { UserActivity } from '../user/models/user-activity.model';
+import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
   imports: [
+    LoggerModule,
     ConfigModule,
     PassportModule,
     JwtModule.registerAsync({

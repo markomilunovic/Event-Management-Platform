@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
@@ -21,6 +21,10 @@ import { TicketModule } from './modules/ticket/ticket.module';
 import { UserActivity } from './modules/user/models/user-activity.model';
 import { User } from './modules/user/models/user.model';
 import { UserModule } from './modules/user/user.module';
+import { LoggerModule } from '@modules/logger/logger.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from 'filters/http-exception.filter';
+import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
 
 @Module({
   imports: [
@@ -69,8 +73,19 @@ import { UserModule } from './modules/user/user.module';
     NotificationModule,
     CachingModule,
     AnalyticsModule,
+    LoggerModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter, // Register Exception Filter globally
+    },
+  ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TraceIdMiddleware).forRoutes('*'); // Apply Middleware globally
+  }
+}
