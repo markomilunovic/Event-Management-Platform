@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { User } from '@modules/user/models/user.model';
+import { User } from '@modules/user/entities/user.entity';
 
 import { AuthController } from './controllers/auth.controller';
-import { AccessToken } from './models/access-token.model';
-import { RefreshToken } from './models/refresh-token.model';
+import { AccessToken } from './entities/access-token.entity';
+import { RefreshToken } from './entities/refresh-token.entity';
 import { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './services/auth.service';
 import { JwtUserStrategy } from './strategies/jwt-user.strategy';
-import { UserActivity } from '../user/models/user-activity.model';
+import { UserActivity } from '../user/entities/user-activity.entity';
 import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
@@ -34,7 +34,7 @@ import { LoggerModule } from '@modules/logger/logger.module';
       },
       inject: [ConfigService],
     }),
-    SequelizeModule.forFeature([User, AccessToken, RefreshToken, UserActivity]),
+    TypeOrmModule.forFeature([User, AccessToken, RefreshToken, UserActivity]),
   ],
   providers: [AuthService, AuthRepository, JwtUserStrategy],
   controllers: [AuthController],

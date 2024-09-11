@@ -1,34 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like, In } from 'typeorm';
 
-import { Op } from 'sequelize';
-
-import { Ticket } from '@modules/ticket/models/ticket.model';
-import { UserActivity } from '@modules/user/models/user-activity.model';
-import { User } from '@modules/user/models/user.model';
-
+import { Event } from '../entities/event.entity';
+import { User } from '@modules/user/entities/user.entity';
+import { Ticket } from '@modules/ticket/entities/ticket.entity';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
-import { Event } from '../models/event.model';
 import { CheckInActivityType, UpdateEventType } from '../types/types';
+import { UserActivity } from '@modules/user/entities/user-activity.entity';
 
 @Injectable()
 export class EventRepository {
   constructor(
-    @InjectModel(Event) private readonly eventModel: typeof Event,
-    @InjectModel(User) private userModel: typeof User,
-    @InjectModel(Ticket) private ticketModel: typeof Ticket,
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Ticket)
+    private ticketRepository: Repository<Ticket>,
+    @InjectRepository(UserActivity)
+    private userActivityRepository: Repository<UserActivity>,
   ) {}
 
   async createEvent(
     createEventDto: CreateEventDto,
     userId: number,
   ): Promise<Event> {
-    return this.eventModel.create({ ...createEventDto, userId });
+    const event = this.eventRepository.create({ ...createEventDto, userId });
+    return this.eventRepository.save(event);
   }
 
   async findEventsByUser(userId: number): Promise<Event[]> {
-    return this.eventModel.findAll({ where: { userId } });
+    return this.eventRepository.find({ where: { userId } });
   }
 
   async searchEvents(searchEventsDto: SearchEventsDto): Promise<Event[]> {
@@ -36,7 +40,7 @@ export class EventRepository {
     const whereClause: any = {};
 
     if (keyword) {
-      whereClause.title = { [Op.like]: `%${keyword}%` };
+      whereClause.title = Like(`%${keyword}%`);
     }
     if (location) {
       whereClause.location = location;
@@ -45,31 +49,28 @@ export class EventRepository {
       whereClause.category = category;
     }
 
-    return this.eventModel.findAll({ where: whereClause });
+    return this.eventRepository.find({ where: whereClause });
   }
 
   async getEvent(eventId: number): Promise<Event> {
-    return this.eventModel.findByPk(eventId);
+    return this.eventRepository.findOneBy({ id: eventId });
   }
 
   async updateEvent(
     eventId: number,
     updateEventType: UpdateEventType,
   ): Promise<void> {
-    const event = await Event.findByPk(eventId);
-    await event.update(updateEventType);
+    await this.eventRepository.update(eventId, updateEventType);
   }
 
   async deleteEvent(eventId: number): Promise<void> {
-    await Event.destroy({ where: { id: eventId } });
+    await this.eventRepository.delete(eventId);
   }
 
   async getUsersForEvent(eventId: number): Promise<User[]> {
-    const tickets = await this.ticketModel.findAll({
-      where: { eventId: eventId },
-    });
+    const tickets = await this.ticketRepository.find({ where: { eventId } });
 
-    if (!tickets?.length) {
+    if (!tickets.length) {
       throw new Error('No tickets found for the given event');
     }
 
@@ -79,11 +80,9 @@ export class EventRepository {
     const uniqueUserIds = [...new Set(userIds)];
 
     // Find all users associated with these userIds
-    const users = await this.userModel.findAll({
-      where: { id: uniqueUserIds },
-    });
+    const users = await this.userRepository.findBy({ id: In(uniqueUserIds) });
 
-    if (!users?.length) {
+    if (!users.length) {
       throw new Error('No users found for the tickets');
     }
 
@@ -91,19 +90,19 @@ export class EventRepository {
   }
 
   async getNonApprovedEvents(): Promise<Event[]> {
-    return this.eventModel.findAll({ where: { isApproved: false } });
+    return this.eventRepository.find({ where: { isApproved: false } });
   }
 
   async approveEvent(id: number): Promise<void> {
-    await this.eventModel.update({ isApproved: true }, { where: { id } });
+    await this.eventRepository.update(id, { isApproved: true });
   }
 
   async rejectEvent(id: number): Promise<void> {
-    await this.eventModel.update({ isApproved: false }, { where: { id } });
+    await this.eventRepository.update(id, { isApproved: false });
   }
 
   async save(event: Event): Promise<void> {
-    await event.save();
+    await this.eventRepository.save(event);
   }
 
   async createCheckInActivity(
@@ -111,7 +110,7 @@ export class EventRepository {
   ): Promise<void> {
     const { userId, action, timestamp, metadata } = checkInActivity;
 
-    await UserActivity.create({
+    await this.userActivityRepository.save({
       userId: userId,
       action: action,
       timestamp: timestamp,

@@ -1,10 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -21,8 +19,6 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-
-import { v4 as uuidv4 } from 'uuid';
 
 import { ResponseDto } from '@common/dto/response.dto';
 import { multerConfig } from 'config/multer.config';
@@ -42,9 +38,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 @UseInterceptors(CacheInterceptor)
 @Controller('users')
 export class UserController {
-
-  constructor(private readonly userService: UserService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly userService: UserService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Get('profile')
@@ -137,8 +133,8 @@ export class UserController {
       await this.userService.deactivateUser(id);
       return new ResponseDto(null, 'User deactivated successfully');
     } catch (error) {
-        this.loggerService.logError(error.message);
-        throw new InternalServerErrorException('Error deactivating user');
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException('Error deactivating user');
     }
   }
 }

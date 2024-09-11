@@ -10,7 +10,7 @@ import { TicketRepository } from '@modules/ticket/repositories/ticket.repository
 
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
-import { Event } from '../models/event.model';
+import { Event } from '../entities/event.entity';
 import { EventRepository } from '../repositories/event.repository';
 import { UpdateEventType } from '../types/types';
 

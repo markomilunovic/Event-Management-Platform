@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
-import { UserActivity } from '@modules/user/models/user-activity.model';
+import { UserActivity } from '@modules/user/entities/user-activity.entity';
 
 import { AnalyticsRepository } from '../repositories/analytics.repository';
 
@@ -54,9 +54,7 @@ export class AnalyticsService {
    * @throws {NotFoundException} If no activities are found for the user.
    */
   async getUserActivity(userId: number): Promise<UserActivity[]> {
-    const activities = await this.userActivityModel.findAll({
-      where: { userId },
-    });
+    const activities = await this.analyticsRepository.getActivities(userId);
 
     if (!activities || activities.length === 0) {
       throw new NotFoundException(

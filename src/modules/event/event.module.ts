@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { EventController } from './controllers/event.controller';
-import { Event } from './models/event.model';
+import { Event } from './entities/event.entity';
 import { EventRepository } from './repositories/event.repository';
 import { EventService } from './services/event.service';
-import { Notification } from '../notification/models/notification.model';
+import { Notification } from '../notification/entities/notification.entities';
 import { NotificationModule } from '../notification/notification.module';
-import { Ticket } from '../ticket/models/ticket.model';
+import { Ticket } from '../ticket/entities/ticket.entity';
 import { TicketModule } from '../ticket/ticket.module';
-import { UserActivity } from '../user/models/user-activity.model';
-import { User } from '../user/models/user.model';
+import { UserActivity } from '../user/entities/user-activity.entity';
+import { User } from '../user/entities/user.entity';
 import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
   imports: [
     ConfigModule,
-    SequelizeModule.forFeature([
+    TypeOrmModule.forFeature([
       Event,
       Ticket,
       Notification,
@@ -26,7 +26,7 @@ import { LoggerModule } from '@modules/logger/logger.module';
     ]),
     NotificationModule,
     TicketModule,
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [EventController],
   providers: [EventService, EventRepository],

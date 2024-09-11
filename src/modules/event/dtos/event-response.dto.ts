@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { Event } from '../models/event.model';
+import { Event } from '../entities/event.entity';
 
 export class EventResponseDto {
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Ticket } from '../models/ticket.model';
+import { Ticket } from '../entities/ticket.entity';
 
 export class TicketResponseDto {
   @ApiProperty({

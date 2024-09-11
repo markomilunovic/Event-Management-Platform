@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EventRepository } from '@modules/event/repositories/event.repository';
 
 import { QRCodeService } from './qrcode.service';
-import { Ticket } from '../models/ticket.model';
+import { Ticket } from '../entities/ticket.entity';
 import { TicketRepository } from '../repositories/ticket.repository';
 import { PurchaseTicketType } from '../types/types';
 

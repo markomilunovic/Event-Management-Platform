@@ -13,7 +13,6 @@ import {
   Put,
   Delete,
   UseInterceptors,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -43,8 +42,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 @UseGuards(JwtUserGuard)
 @Controller('events')
 export class EventController {
-  constructor(private readonly eventService: EventService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly eventService: EventService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Post()
@@ -62,11 +62,11 @@ export class EventController {
   ): Promise<EventResponseDto> {
     try {
       const userId = req.user?.id;
-    if (!userId) {
-      throw new UnauthorizedException('User not authenticated');
-    }
-    const event = await this.eventService.createEvent(createEventDto, userId);
-    return new EventResponseDto(event);
+      if (!userId) {
+        throw new UnauthorizedException('User not authenticated');
+      }
+      const event = await this.eventService.createEvent(createEventDto, userId);
+      return new EventResponseDto(event);
     } catch (error) {
       this.loggerService.logError(error.message);
       throw new InternalServerErrorException('Error creating event');
@@ -85,11 +85,11 @@ export class EventController {
   async getUserEvents(@Req() req: AuthRequest): Promise<EventResponseDto[]> {
     try {
       const userId = req.user?.id;
-    if (!userId) {
-      throw new UnauthorizedException('User not authenticated');
-    }
-    const events = await this.eventService.getUserEvents(userId);
-    return events.map((event) => new EventResponseDto(event));
+      if (!userId) {
+        throw new UnauthorizedException('User not authenticated');
+      }
+      const events = await this.eventService.getUserEvents(userId);
+      return events.map((event) => new EventResponseDto(event));
     } catch (error) {
       this.loggerService.logError(error.message);
       throw new InternalServerErrorException('Error retrieving events');
@@ -225,7 +225,9 @@ export class EventController {
       return events.map((event) => new EventResponseDto(event));
     } catch (error) {
       this.loggerService.logError(error.message);
-      throw new InternalServerErrorException('Error retrieving non-approved events');
+      throw new InternalServerErrorException(
+        'Error retrieving non-approved events',
+      );
     }
   }
 
@@ -307,9 +309,7 @@ export class EventController {
       return new ResponseDto(null, 'Check-in to event successful');
     } catch (error) {
       this.loggerService.logError(error.message);
-      throw new InternalServerErrorException(
-        'Error checking in to the event',
-      );
+      throw new InternalServerErrorException('Error checking in to the event');
     }
   }
 }

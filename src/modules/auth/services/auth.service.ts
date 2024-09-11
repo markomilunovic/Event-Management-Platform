@@ -18,8 +18,8 @@ import {
   AccessTokenPayload,
   RefreshTokenPayload,
 } from '../interfaces/token-payloads.interface';
-import { AccessToken } from '../models/access-token.model';
-import { RefreshToken } from '../models/refresh-token.model';
+import { AccessToken } from '../entities/access-token.entity';
+import { RefreshToken } from '../entities/refresh-token.entity';
 import { AuthRepository } from '../repositories/auth.repository';
 
 @Injectable()
