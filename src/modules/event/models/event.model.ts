@@ -1,102 +1,59 @@
 import {
+  Entity,
   Column,
-  DataType,
-  Model,
-  Table,
-  ForeignKey,
-} from 'sequelize-typescript';
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from '@modules/user/models/user.model';
 
-import { User } from '../../user/models/user.model';
-
-@Table({ tableName: 'event' })
-export class Event extends Model<Event> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity({ name: 'event' })
+export class Event {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-    field: 'user_id',
-  })
+  @Column({ type: 'int', name: 'user_id' })
   userId: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: 'varchar', length: 255 })
   title: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: 'varchar', length: 255 })
   description: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: 'varchar', length: 255 })
   location: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   category: string;
 
-  @Column({
-    type: DataType.DATEONLY,
-    allowNull: false,
-  })
+  @Column({ type: 'date' })
   date: Date;
 
-  @Column({
-    type: DataType.TIME,
-    allowNull: false,
-  })
+  @Column({ type: 'time' })
   time: string;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-    field: 'is_approved',
-  })
+  @Column({ type: 'boolean', default: false, name: 'is_approved' })
   isApproved: boolean;
 
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-    field: 'attendance_count',
-  })
+  @Column({ type: 'int', default: 0, name: 'attendance_count' })
   attendanceCount: number;
 
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-    allowNull: false,
-    field: 'tickets_sold',
-  })
+  @Column({ type: 'int', default: 0, name: 'tickets_sold' })
   ticketsSold: number;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'created_at',
-  })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'updated_at',
-  })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.events, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

@@ -26,7 +26,7 @@ import { LoggerModule } from '@modules/logger/logger.module';
     ]),
     NotificationModule,
     TicketModule,
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [EventController],
   providers: [EventService, EventRepository],

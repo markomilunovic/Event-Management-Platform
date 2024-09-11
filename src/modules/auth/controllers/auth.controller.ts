@@ -30,8 +30,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly authService: AuthService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Post('register')
@@ -73,7 +74,7 @@ export class AuthController {
       return this.authService.login(loginUserDto);
     } catch (error) {
       this.loggerService.logError(error.message);
-      throw new InternalServerErrorException('User login error')
+      throw new InternalServerErrorException('User login error');
     }
   }
 

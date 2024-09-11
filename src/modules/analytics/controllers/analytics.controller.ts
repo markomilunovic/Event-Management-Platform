@@ -22,8 +22,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 @UseGuards(JwtUserGuard, AdminGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Get('event-attendance/:eventId')
@@ -50,10 +51,10 @@ export class AnalyticsController {
         `The attendance for the event is ${eventAttendance}.`,
       );
     } catch (error) {
-        this.loggerService.logError(error.message);
-        throw new InternalServerErrorException(
-          'Error retrieving event attendance',
-        );
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException(
+        'Error retrieving event attendance',
+      );
     }
   }
 
@@ -80,10 +81,10 @@ export class AnalyticsController {
         `Tickets sold for the event: ${ticketsSold}.`,
       );
     } catch (error) {
-        this.loggerService.logError(error.message);
-        throw new InternalServerErrorException(
-          'Error retrieving tickets sold data',
-        );
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException(
+        'Error retrieving tickets sold data',
+      );
     }
   }
 
@@ -107,10 +108,10 @@ export class AnalyticsController {
         `Activities for user ${userId} retrieved successfully.`,
       );
     } catch (error) {
-        this.loggerService.logError(error.message);
-        throw new InternalServerErrorException(
-          'Error retrieving user activities',
-        );
+      this.loggerService.logError(error.message);
+      throw new InternalServerErrorException(
+        'Error retrieving user activities',
+      );
     }
   }
 }

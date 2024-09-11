@@ -9,10 +9,7 @@ import { UserActivity } from '../user/models/user-activity.model';
 import { LoggerModule } from '@modules/logger/logger.module';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Event, UserActivity]),
-    LoggerModule
-],
+  imports: [SequelizeModule.forFeature([Event, UserActivity]), LoggerModule],
   controllers: [AnalyticsController],
   providers: [AnalyticsService, AnalyticsRepository],
 })

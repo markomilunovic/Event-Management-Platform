@@ -1,58 +1,38 @@
 import {
+  Entity,
   Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { AccessToken } from './access-token.model';
 
-@Table({ tableName: 'refresh_token' })
-export class RefreshToken extends Model<RefreshToken> {
-  @Column({
-    type: DataType.UUID,
-    primaryKey: true,
-    defaultValue: DataType.UUIDV4,
-  })
+@Entity({ name: 'refresh_token' })
+export class RefreshToken {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ForeignKey(() => AccessToken)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-    field: 'access_token_id',
-  })
+  @Column({ type: 'uuid', name: 'access_token_id' })
   accessTokenId: string;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-    field: 'is_revoked',
-  })
+  @Column({ type: 'boolean', default: false, name: 'is_revoked' })
   isRevoked: boolean;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    field: 'expires_at',
-  })
+  @Column({ type: 'timestamp', name: 'expires_at' })
   expiresAt: Date;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'created_at',
-  })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'updated_at',
-  })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @ManyToOne(() => AccessToken, (accessToken) => accessToken.refreshTokens, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'access_token_id' })
+  accessToken: AccessToken;
 }

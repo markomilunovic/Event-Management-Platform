@@ -34,8 +34,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 @UseInterceptors(CacheInterceptor)
 @Controller('tickets')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly ticketService: TicketService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Post()

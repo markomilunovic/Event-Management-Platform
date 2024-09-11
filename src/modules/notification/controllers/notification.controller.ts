@@ -16,8 +16,6 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import { JwtUserGuard } from '@modules/auth/guards/jwt-user.guard';
 import { Cacheable } from '@modules/caching/decorators/cache.decorator';
 import { CacheInterceptor } from '@modules/caching/interceptors/cache.interceptor';
@@ -35,8 +33,9 @@ import { LoggerService } from '@modules/logger/logger.service';
 export class NotificationController {
   private readonly logger = new Logger(NotificationController.name);
 
-  constructor(private readonly notificationService: NotificationService,
-              private readonly loggerService: LoggerService
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Get()
@@ -76,7 +75,9 @@ export class NotificationController {
       );
     } catch (error) {
       this.loggerService.logError(error.message);
-      throw new InternalServerErrorException('Error marking notification as read');
+      throw new InternalServerErrorException(
+        'Error marking notification as read',
+      );
     }
   }
 }

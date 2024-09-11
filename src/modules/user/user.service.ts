@@ -3,21 +3,21 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
-
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { User } from './models/user.model';
 import { UserRepository } from './user.repository';
+import { LoggerService } from '@modules/logger/logger.service';
 
 @Injectable()
 export class UserService {
-  private readonly logger = new Logger(UserService.name);
-
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly loggerService: LoggerService,
+  ) {}
 
   /**
    * Retrieves the profile of a user by their ID.
@@ -36,9 +36,8 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      this.logger.error(
+      this.loggerService.logError(
         `TraceId: ${traceId} - Error retrieving profile: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException({
         message: 'Error retrieving user profile',
@@ -74,9 +73,8 @@ export class UserService {
 
       await this.userRepository.updateProfile(userId, updateProfileDto);
     } catch (error) {
-      this.logger.error(
+      this.loggerService.logError(
         `TraceId: ${traceId} - Error updating profile: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException({
         message: 'Error updating user profile',
@@ -96,9 +94,8 @@ export class UserService {
     try {
       return await this.userRepository.getUsers();
     } catch (error) {
-      this.logger.error(
+      this.loggerService.logError(
         `TraceId: ${traceId} - Error retrieving users: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException({
         message: 'Error retrieving users',
@@ -132,9 +129,8 @@ export class UserService {
       user.isActive = false;
       await this.userRepository.save(user);
     } catch (error) {
-      this.logger.error(
+      this.loggerService.logError(
         `TraceId: ${traceId} - Error deactivating user: ${error.message}`,
-        error.stack,
       );
       if (
         error instanceof NotFoundException ||

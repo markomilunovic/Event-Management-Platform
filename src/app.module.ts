@@ -1,26 +1,24 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AnalyticsModule } from './modules/analytics/analytics.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { User } from './modules/user/models/user.model';
 import { AccessToken } from './modules/auth/models/access-token.model';
 import { RefreshToken } from './modules/auth/models/refresh-token.model';
-import { CachingModule } from './modules/caching/caching.module';
-import { EventModule } from './modules/event/event.module';
 import { Event } from './modules/event/models/event.model';
-import { Notification } from './modules/notification/models/notification.model';
-import { NotificationModule } from './modules/notification/notification.module';
 import { Ticket } from './modules/ticket/models/ticket.model';
-import { TicketModule } from './modules/ticket/ticket.module';
+import { Notification } from './modules/notification/models/notification.model';
 import { UserActivity } from './modules/user/models/user-activity.model';
-import { User } from './modules/user/models/user.model';
-import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { EventModule } from './modules/event/event.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { CachingModule } from './modules/caching/caching.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { LoggerModule } from '@modules/logger/logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from 'filters/http-exception.filter';
@@ -31,18 +29,16 @@ import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    SequelizeModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        dialect: configService.get<any>('DB_DIALECT'),
+        type: configService.get<string>('DB_DIALECT') as any,
         host: configService.get<string>('DB_HOST'),
         port: configService.get<number>('DB_PORT') || 3306,
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        autoLoadModels: true,
-        synchronize: true,
-        models: [
+        entities: [
           User,
           AccessToken,
           RefreshToken,
@@ -51,9 +47,19 @@ import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
           Notification,
           UserActivity,
         ],
+        synchronize: true,
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([
+      User,
+      AccessToken,
+      RefreshToken,
+      Event,
+      Ticket,
+      Notification,
+      UserActivity,
+    ]),
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
@@ -66,14 +72,13 @@ import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
         }),
       ],
     }),
-    UserModule,
     AuthModule,
     EventModule,
     TicketModule,
     NotificationModule,
     CachingModule,
     AnalyticsModule,
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
@@ -82,7 +87,7 @@ import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter, // Register Exception Filter globally
     },
-  ]
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

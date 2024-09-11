@@ -1,68 +1,46 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { AccessToken } from '@modules/auth/models/access-token.model';
+import { Event } from '@modules/event/models/event.model';
 
-@Table({ tableName: 'user' })
-export class User extends Model<User> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity({ name: 'user' })
+export class User {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: 'varchar', nullable: false })
   name: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-  })
+  @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @Column({
-    type: DataType.STRING,
-    field: 'profile_picture',
-  })
+  @Column({ type: 'varchar', nullable: true, name: 'profile_picture' })
   profilePicture: string;
 
-  @Column({
-    type: DataType.ENUM,
-    values: ['user', 'admin'],
-    allowNull: false,
-    defaultValue: 'user',
-  })
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
   role: string;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-    defaultValue: true,
-    field: 'is_active',
-  })
+  @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'created_at',
-  })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-    defaultValue: DataType.NOW,
-    field: 'updated_at',
-  })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @OneToMany(() => AccessToken, (accessToken) => accessToken.user)
+  accessTokens: AccessToken[];
+
+  @OneToMany(() => Event, (event) => event.user)
+  events: Event[];
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { UserActivity } from '@modules/user/models/user-activity.model';
 import { User } from '@modules/user/models/user.model';
-
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccessToken } from '../models/access-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
@@ -12,71 +12,85 @@ import { LogInActivityType } from '../types/types';
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectModel(User) private readonly userModel: typeof User,
-    @InjectModel(AccessToken)
-    private readonly accessTokenModel: typeof AccessToken,
-    @InjectModel(RefreshToken)
-    private readonly refreshTokenModel: typeof RefreshToken,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(AccessToken)
+    private readonly accessTokenRepository: Repository<AccessToken>,
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
+    @InjectRepository(UserActivity)
+    private readonly userActivityRepository: Repository<UserActivity>,
   ) {}
 
-  async findUserByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({ where: { email } });
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOneBy({ email });
   }
 
-  async findUserById(id: number): Promise<User> {
-    return this.userModel.findByPk(id);
+  async findUserById(id: number): Promise<User | null> {
+    return this.userRepository.findOneBy({ id });
   }
 
   async createUser(
     createUserDto: CreateUserDto,
     profilePicture?: string,
   ): Promise<User> {
-    return this.userModel.create({ ...createUserDto, profilePicture });
+    const user = this.userRepository.create({
+      ...createUserDto,
+      profilePicture,
+    });
+    return this.userRepository.save(user);
   }
 
   async createAccessToken(
     userId: number,
     expiresAt: Date,
   ): Promise<AccessToken> {
-    return this.accessTokenModel.create({ userId, expiresAt });
+    const accessToken = this.accessTokenRepository.create({
+      userId,
+      expiresAt,
+    });
+    return this.accessTokenRepository.save(accessToken);
   }
 
   async createRefreshToken(
     accessTokenId: string,
     expiresAt: Date,
   ): Promise<RefreshToken> {
-    return this.refreshTokenModel.create({ accessTokenId, expiresAt });
+    const refreshToken = this.refreshTokenRepository.create({
+      accessTokenId,
+      expiresAt,
+    });
+    return this.refreshTokenRepository.save(refreshToken);
   }
 
-  async findAccessTokenByUserId(userId: number): Promise<AccessToken> {
-    return this.accessTokenModel.findOne({
+  async findAccessTokenByUserId(userId: number): Promise<AccessToken | null> {
+    return this.accessTokenRepository.findOne({
       where: { userId, isRevoked: false },
     });
   }
 
   async revokeAccessToken(accessTokenId: string): Promise<void> {
-    await this.accessTokenModel.update(
+    await this.accessTokenRepository.update(
+      { id: accessTokenId },
       { isRevoked: true },
-      { where: { id: accessTokenId } },
     );
   }
 
   async revokeRefreshTokenByAccessTokenId(
     accessTokenId: string,
   ): Promise<void> {
-    await this.refreshTokenModel.update(
+    await this.refreshTokenRepository.update(
+      { accessTokenId },
       { isRevoked: true },
-      { where: { accessTokenId } },
     );
   }
 
   async createLogInActivity(userActivity: LogInActivityType): Promise<void> {
     const { userId, action, timestamp } = userActivity;
-
-    await UserActivity.create({
-      userId: userId,
-      action: action,
-      timestamp: timestamp,
+    await this.userActivityRepository.save({
+      userId,
+      action,
+      timestamp,
     });
   }
 }

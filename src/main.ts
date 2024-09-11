@@ -17,7 +17,6 @@ async function bootstrap() {
     }),
   );
 
-
   const config = new DocumentBuilder()
     .setTitle('Event Management API')
     .setDescription('The Event Management API description')
