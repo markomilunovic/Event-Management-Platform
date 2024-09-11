@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
-import { User } from '@modules/user/models/user.model';
+import { User } from '../../user/entities/user.entity';
+import { Ticket } from '../../ticket/entities/ticket.entity';
 
 @Entity({ name: 'event' })
 export class Event {
@@ -56,4 +58,7 @@ export class Event {
   })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(() => Ticket, (ticket) => ticket.event)
+  tickets: Ticket[]; // Add the tickets relationship
 }

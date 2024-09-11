@@ -6,13 +6,13 @@ import * as winston from 'winston';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User } from './modules/user/models/user.model';
-import { AccessToken } from './modules/auth/models/access-token.model';
-import { RefreshToken } from './modules/auth/models/refresh-token.model';
-import { Event } from './modules/event/models/event.model';
-import { Ticket } from './modules/ticket/models/ticket.model';
-import { Notification } from './modules/notification/models/notification.model';
-import { UserActivity } from './modules/user/models/user-activity.model';
+import { User } from './modules/user/entities/user.entity';
+import { AccessToken } from './modules/auth/entities/access-token.entity';
+import { RefreshToken } from './modules/auth/entities/refresh-token.entity';
+import { Event } from './modules/event/entities/event.entity';
+import { Ticket } from './modules/ticket/entities/ticket.entity';
+import { Notification } from './modules/notification/entities/notification.entities';
+import { UserActivity } from './modules/user/entities/user-activity.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { EventModule } from './modules/event/event.module';
 import { TicketModule } from './modules/ticket/ticket.module';
@@ -85,12 +85,12 @@ import { TraceIdMiddleware } from '@modules/logger/trace-id.middleware';
     AppService,
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter, // Register Exception Filter globally
+      useClass: HttpExceptionFilter, 
     },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TraceIdMiddleware).forRoutes('*'); // Apply Middleware globally
+    consumer.apply(TraceIdMiddleware).forRoutes('*'); 
   }
 }

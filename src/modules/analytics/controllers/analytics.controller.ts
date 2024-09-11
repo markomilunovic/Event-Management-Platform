@@ -13,7 +13,7 @@ import { INTEGER } from 'sequelize';
 import { ResponseDto } from '@common/dto/response.dto';
 import { AdminGuard } from '@modules/auth/guards/admin.guard';
 import { JwtUserGuard } from '@modules/auth/guards/jwt-user.guard';
-import { UserActivity } from '@modules/user/models/user-activity.model';
+import { UserActivity } from '@modules/user/entities/user-activity.entity';
 
 import { AnalyticsService } from '../services/analytics.service';
 import { LoggerService } from '@modules/logger/logger.service';

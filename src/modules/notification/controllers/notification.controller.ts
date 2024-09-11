@@ -21,7 +21,7 @@ import { Cacheable } from '@modules/caching/decorators/cache.decorator';
 import { CacheInterceptor } from '@modules/caching/interceptors/cache.interceptor';
 import { AuthRequest } from '@modules/event/interfaces/auth-request.interface';
 
-import { Notification } from '../models/notification.model';
+import { Notification } from '../entities/notification.entities';
 import { NotificationService } from '../services/notification.service';
 import { LoggerService } from '@modules/logger/logger.service';
 

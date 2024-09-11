@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { NotificationStatus } from '../enums/notification-status.enum';
 import { NotificationGateway } from '../gateway/notification.gateway';
-import { Notification } from '../models/notification.model';
+import { Notification } from '../entities/notification.entities';
 import { NotificationRepository } from '../repositories/notification.repository';
 
 @Injectable()

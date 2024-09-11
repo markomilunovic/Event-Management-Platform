@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UserActivity } from '@modules/user/models/user-activity.model';
-import { User } from '@modules/user/models/user.model';
+import { UserActivity } from '@modules/user/entities/user-activity.entity';
+import { User } from '@modules/user/entities/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { AccessToken } from '../models/access-token.model';
-import { RefreshToken } from '../models/refresh-token.model';
+import { AccessToken } from '../entities/access-token.entity';
+import { RefreshToken } from '../entities/refresh-token.entity';
 import { LogInActivityType } from '../types/types';
 
 @Injectable()

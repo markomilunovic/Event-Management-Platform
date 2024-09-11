@@ -5,17 +5,19 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { AccessToken } from './access-token.model';
+import { User } from '../../user/entities/user.entity';
+import { RefreshToken } from './refresh-token.entity';
 
-@Entity({ name: 'refresh_token' })
-export class RefreshToken {
+@Entity({ name: 'access_token' })
+export class AccessToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid', name: 'access_token_id' })
-  accessTokenId: string;
+  @Column({ type: 'int' })
+  userId: number;
 
   @Column({ type: 'boolean', default: false, name: 'is_revoked' })
   isRevoked: boolean;
@@ -29,10 +31,13 @@ export class RefreshToken {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => AccessToken, (accessToken) => accessToken.refreshTokens, {
+  @ManyToOne(() => User, (user) => user.accessTokens, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'access_token_id' })
-  accessToken: AccessToken;
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.accessToken)
+  refreshTokens: RefreshToken[];
 }

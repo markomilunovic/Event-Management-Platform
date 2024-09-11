@@ -6,8 +6,11 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { AccessToken } from '@modules/auth/models/access-token.model';
-import { Event } from '@modules/event/models/event.model';
+import { AccessToken } from '../../auth/entities/access-token.entity';
+import { Event } from '../../event/entities/event.entity'; 
+import { UserActivity } from './user-activity.entity';
+import { Ticket } from '../../ticket/entities/ticket.entity';
+import { Notification } from '../../notification/entities/notification.entities';
 
 @Entity({ name: 'user' })
 export class User {
@@ -43,4 +46,13 @@ export class User {
 
   @OneToMany(() => Event, (event) => event.user)
   events: Event[];
+
+  @OneToMany(() => UserActivity, (userActivity) => userActivity.user)
+  activities: UserActivity[];
+
+  @OneToMany(() => Ticket, (ticket) => ticket.user)
+  tickets: Ticket[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }

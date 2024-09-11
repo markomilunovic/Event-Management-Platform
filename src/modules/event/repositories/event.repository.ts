@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, In } from 'typeorm';
 
-import { Event } from '../models/event.model';
-import { User } from '@modules/user/models/user.model';
-import { Ticket } from '@modules/ticket/models/ticket.model';
+import { Event } from '../entities/event.entity';
+import { User } from '@modules/user/entities/user.entity';
+import { Ticket } from '@modules/ticket/entities/ticket.entity';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { SearchEventsDto } from '../dtos/search-events.dto';
 import { CheckInActivityType, UpdateEventType } from '../types/types';
-import { UserActivity } from '@modules/user/models/user-activity.model';
+import { UserActivity } from '@modules/user/entities/user-activity.entity';
 
 @Injectable()
 export class EventRepository {

@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { NotificationStatus } from '../enums/notification-status.enum';
-import { Notification } from '../models/notification.model';
+import { Notification } from '../entities/notification.entities';
 
 @Injectable()
 export class NotificationRepository {
   constructor(
-    @InjectModel(Notification) private notificationModel: typeof Notification,
+    @InjectRepository(Notification)
+    private readonly notificationRepository: Repository<Notification>,
   ) {}
 
   async findNotificationsByUserId(userId: number): Promise<Notification[]> {
-    return this.notificationModel.findAll({ where: { userId } });
+    return this.notificationRepository.find({ where: { userId } });
   }
 
   async createNotification(
@@ -19,7 +20,12 @@ export class NotificationRepository {
     message: string,
     status: NotificationStatus,
   ): Promise<Notification> {
-    return this.notificationModel.create({ userId, message, status });
+    const notification = this.notificationRepository.create({
+      userId,
+      message,
+      status,
+    });
+    return this.notificationRepository.save(notification);
   }
 
   async updateNotificationStatus(
@@ -27,14 +33,13 @@ export class NotificationRepository {
     notificationId: number,
     status: NotificationStatus,
   ): Promise<Notification> {
-    const notification = await this.notificationModel.findOne({
+    const notification = await this.notificationRepository.findOne({
       where: { id: notificationId, userId },
     });
     if (!notification) {
       throw new Error('Notification not found');
     }
     notification.status = status;
-    await notification.save();
-    return notification;
+    return this.notificationRepository.save(notification);
   }
 }
